@@ -41,7 +41,7 @@ cmd(
 
       // Generate sticker metadata
       const sticker = new Sticker(webpBuffer, {
-        pack: config.STICKER_NAME || '𖢗🌹᪳𝐈𝐓𝐒 𝐌𝐄🍀᪳𝐏𝐑𝐈𝐍𝐂𝐄 𝐒𝐈𝐃™🍎᪳𖢗',
+        pack: config.STICKER_NAME || '𖢗🌹᪳𝐈𝐓𝐒 𝐌𝐄🍀᪳nyoni xmd™🍎᪳𖢗',
         author: '', // Leave blank or customize
         type: StickerTypes.FULL, // FULL for regular stickers
         categories: ['🤩', '🎉'], // Emoji categories
