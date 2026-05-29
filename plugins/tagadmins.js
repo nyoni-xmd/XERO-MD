@@ -41,7 +41,7 @@ async (conn, mek, m, { from, participants, reply, isGroup, senderNumber, groupAd
             teks += `${randomEmoji} @${admin.split('@')[0]}\n`;
         }
 
-        teks += "╰────────────────❍\n> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*";
+        teks += "╰────────────────❍\n> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ nyoni xmd*";
 
         // Send the image along with the message
         const imageUrl = "https://files.catbox.moe/2loc7s.jpg";  // Replace with your image URL or local image path
