@@ -18,21 +18,21 @@ cmd({
         await reply("*🔍 ᴄʜᴇᴄᴋɪɴɢ ғᴏʀ ᴜᴘᴅᴀᴛᴇs...*");
 
         // Fetch the latest commit hash from GitHub
-        const { data: commitData } = await axios.get("https://api.github.com/repos/PrinceXtremeX/XTREME-XMD/commits/main");
+        const { data: commitData } = await axios.get("https://api.github.com/repos/nyoni-xmd/XERO-MD/commits/main");
         const latestCommitHash = commitData.sha;
 
         // Get the stored commit hash from the database
         const currentHash = await getCommitHash();
 
         if (latestCommitHash === currentHash) {
-            return reply("*✅ ʏᴏᴜʀ xᴛʀᴇᴍᴇ-xᴍᴅ ɪs ᴀʟʀᴇᴀᴅʏ ᴜᴘ-ᴛᴏ-ᴅᴀᴛᴇ !*");
+            return reply("*✅ ʏᴏᴜʀ XERO-MD ɪs ᴀʟʀᴇᴀᴅʏ ᴜᴘ-ᴛᴏ-ᴅᴀᴛᴇ !*");
         }
 
-        await reply("*🚀 ᴜᴘᴅᴀᴛɪɴɢ xᴛʀᴇᴍᴇ-xᴍᴅ ʙᴏᴛ...*");
+        await reply("*🚀 ᴜᴘᴅᴀᴛɪɴɢ XERO-MD ʙᴏᴛ...*");
 
         // Download the latest code
         const zipPath = path.join(__dirname, "latest.zip");
-        const { data: zipData } = await axios.get("https://github.com/PrinceXtremeX/XTREME-XMD/archive/main.zip", { responseType: "arraybuffer" });
+        const { data: zipData } = await axios.get("https://github.com/nyoni-xmd/XERO-MD/archive/main.zip", { responseType: "arraybuffer" });
         fs.writeFileSync(zipPath, zipData);
 
         // Extract ZIP file
@@ -43,7 +43,7 @@ cmd({
 
         // Copy updated files, preserving config.js and app.json
         await reply("*🔄 ʀᴇᴘʟᴀᴄɪɴɢ ғɪʟᴇs...*");
-        const sourcePath = path.join(extractPath, "XTREME-XMD-main");
+        const sourcePath = path.join(extractPath, "XERO-MD-main");
         const destinationPath = path.join(__dirname, '..');
         copyFolderSync(sourcePath, destinationPath);
 
