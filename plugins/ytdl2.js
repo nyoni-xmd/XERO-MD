@@ -6,13 +6,14 @@ const {
   ytmp3,
   ytmp4
 } = require("@dark-yasiya/yt-dl.js");
+
 cmd({
   'pattern': 'mp4',
   'alias': ["video", "ytv"],
   'react': '🎥',
-  'desc': "Download Youtube song",
+  'desc': "Download Youtube video",
   'category': "main",
-  'use': ".song < Yt url or Name >",
+  'use': ".mp4 < Yt url or Name >",
   'filename': __filename
 }, async (_0x2dc807, _0x35820f, _0x144306, {
   from: _0x321043,
@@ -36,7 +37,7 @@ cmd({
     if (_0x241349.status !== 0xc8 || !_0x241349.success || !_0x241349.result.download_url) {
       return _0x15b3cd("Failed to fetch the video. Please try again later.");
     }
-    let _0x452f5f = "╔═══〔 *XTREME XMD ☄️* 〕═══❒\n║╭───────────────◆  \n║│ *❍ ᴠɪᴅᴇᴏ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ*\n║╰───────────────◆\n╚══════════════════❒\n╔══════════════════❒\n║ ⿻ *ᴛɪᴛʟᴇ:*  " + _0x5297bb.title + "\n║ ⿻ *ᴅᴜʀᴀᴛɪᴏɴ:*  " + _0x5297bb.timestamp + "\n║ ⿻ *ᴠɪᴇᴡs:*  " + _0x5297bb.views + "\n║ ⿻ *ᴀᴜᴛʜᴏʀ:*  " + _0x5297bb.author.name + "\n║ ⿻ *ʟɪɴᴋ:*  " + _0x5297bb.url + "\n╚══════════════════❒\n*ғꪮʀ ʏꪮꪊ ғꪮʀ ᴀʟʟ ꪮғ ᴀꜱ 🍉*";
+    let _0x452f5f = "╔═══〔 *XERO-MD ☄️* 〕═══❒\n║╭───────────────◆  \n║│ *❍ ᴠɪᴅᴇᴏ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ*\n║╰───────────────◆\n╚══════════════════❒\n╔══════════════════❒\n║ ⿻ *ᴛɪᴛʟᴇ:*  " + _0x5297bb.title + "\n║ ⿻ *ᴅᴜʀᴀᴛɪᴏɴ:*  " + _0x5297bb.timestamp + "\n║ ⿻ *ᴠɪᴇᴡs:*  " + _0x5297bb.views + "\n║ ⿻ *ᴀᴜᴛʜᴏʀ:*  " + _0x5297bb.author.name + "\n║ ⿻ *ʟɪɴᴋ:*  " + _0x5297bb.url + "\n╚══════════════════❒\n*ғꪮʀ ʏꪮꪊ ғꪮʀ ᴀʟʟ ꪮғ ᴀꜱ 🍉*";
     await _0x2dc807.sendMessage(_0x321043, {
       'image': {
         'url': _0x241349.result.thumbnail || ''
@@ -59,7 +60,7 @@ cmd({
       },
       'mimetype': 'video/mp4',
       'fileName': _0x241349.result.title + ".mp4",
-      'caption': '*' + _0x5297bb.title + "*\n> _ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ_*"
+      'caption': '*' + _0x5297bb.title + "*\n> _ᴘᴏᴡᴇʀᴇᴅ ʙʏ PRINCE XTREME_*"
     }, {
       'quoted': _0x35820f
     });
@@ -68,13 +69,14 @@ cmd({
     _0x15b3cd("An error occurred. Please try again later.");
   }
 });
+
 cmd({
   'pattern': "mp3",
   'alias': ['yta', "play"],
   'react': '🎶',
-  'desc': "Download Youtube song",
+  'desc': "Download Youtube audio",
   'category': 'main',
-  'use': ".song < Yt url or Name >",
+  'use': ".mp3 < Yt url or Name >",
   'filename': __filename
 }, async (_0xa01491, _0xd285e7, _0x220865, {
   from: _0x260fff,
@@ -98,7 +100,7 @@ cmd({
     if (_0x39a02f.status !== 0xc8 || !_0x39a02f.success || !_0x39a02f.result.downloadUrl) {
       return _0x258b45("Failed to fetch the audio. Please try again later.");
     }
-    let _0x161add = "╭─ 「 *\`XTREME YTA\`* 」\n│ ⿻ *ᴛɪᴛʟᴇ:*  " + _0x255517.title + "\n│ ⿻ *ᴅᴜʀᴀᴛɪᴏɴ:*  " + _0x255517.timestamp + "\n│ ⿻ *ᴠɪᴇᴡs:*  " + _0x255517.views + "\n│ ⿻ *ᴀᴜᴛʜᴏʀ:*  " + _0x255517.author.name + "\n│ ⿻ *ʟɪɴᴋ:*  " + _0x255517.url + "\n╰─────────────⭑─➤\n*ғꪮʀ ʏꪮꪊ ғꪮʀ ᴀʟʟ ꪮғ ᴀꜱ 🍉*";
+    let _0x161add = "╭─ 「 *`XERO-MD YTA`* 」\n│ ⿻ *ᴛɪᴛʟᴇ:*  " + _0x255517.title + "\n│ ⿻ *ᴅᴜʀᴀᴛɪᴏɴ:*  " + _0x255517.timestamp + "\n│ ⿻ *ᴠɪᴇᴡs:*  " + _0x255517.views + "\n│ ⿻ *ᴀᴜᴛʜᴏʀ:*  " + _0x255517.author.name + "\n│ ⿻ *ʟɪɴᴋ:*  " + _0x255517.url + "\n╰─────────────⭑─➤\n*ғꪮʀ ʏꪮꪊ ғꪮʀ ᴀʟʟ ꪮғ ᴀꜱ 🍉*";
     await _0xa01491.sendMessage(_0x260fff, {
       'image': {
         'url': _0x39a02f.result.image || ''
@@ -121,7 +123,7 @@ cmd({
       },
       'mimetype': "audio/mpeg",
       'fileName': _0x39a02f.result.title + ".mp3",
-      'caption': "> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*"
+      'caption': "> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ PRINCE XTREME*"
     }, {
       'quoted': _0xd285e7
     });
