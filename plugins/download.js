@@ -158,7 +158,7 @@ cmd({
     }
     const _0x57d490 = _0x50c56e.datalist.list[0x0];
     const _0x28322a = (_0x57d490.size / 0x100000).toFixed(0x2);
-    const _0xd03ae4 = "╭⭑━━➤ *ᴀᴘᴋ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ*\n┃ 📦 *ɴᴀᴍᴇ:* " + _0x57d490.name + "\n┃ 🏋 *sɪᴢᴇ:* " + _0x28322a + " ᴍʙ\n┃ 📦 *ᴘᴀᴄᴋᴀɢᴇ:* " + _0x57d490["ᴘᴀᴄᴋᴀɢᴇ"] + "\n┃ 📅 *ᴜᴘᴅᴀᴛᴇᴅ ᴏɴ:* " + _0x57d490.updated + "\n┃ 👨‍💻 *ᴅᴇᴠᴇʟᴏᴘᴇʀ:* " + _0x57d490.developer.name + "\n╰━━━━━━━━━━━━━━━┈⊷\n🔗 *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*";
+    const _0xd03ae4 = "╭⭑━━➤ *ᴀᴘᴋ ᴅᴏᴡɴʟᴏᴀᴅᴇʀ*\n┃ 📦 *ɴᴀᴍᴇ:* " + _0x57d490.name + "\n┃ 🏋 *sɪᴢᴇ:* " + _0x28322a + " ᴍʙ\n┃ 📦 *ᴘᴀᴄᴋᴀɢᴇ:* " + _0x57d490["ᴘᴀᴄᴋᴀɢᴇ"] + "\n┃ 📅 *ᴜᴘᴅᴀᴛᴇᴅ ᴏɴ:* " + _0x57d490.updated + "\n┃ 👨‍💻 *ᴅᴇᴠᴇʟᴏᴘᴇʀ:* " + _0x57d490.developer.name + "\n╰━━━━━━━━━━━━━━━┈⊷\n🔗 *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*";
     await _0xcff8bc.sendMessage(_0x4df21c, {
       'react': {
         'text': '⬆️',
@@ -224,7 +224,7 @@ cmd({
         },
         'mimetype': _0x10ba5.data.result.mimetype,
         'fileName': _0x10ba5.data.result.fileName,
-        'caption': "> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*"
+        'caption': "> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*"
       }, {
         'quoted': _0x1557f0
       });
