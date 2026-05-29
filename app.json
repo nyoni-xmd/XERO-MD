@@ -1,11 +1,11 @@
 {
-  "name": "XTREME-XMD",
-  "description": "ᴊᴀᴠᴀsᴄʀɪᴘᴛ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ ᴄʀᴇᴀᴛᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ",
+  "name": "XERO-MD",
+  "description": "ᴊᴀᴠᴀsᴄʀɪᴘᴛ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ ᴄʀᴇᴀᴛᴇᴅ ʙʏ nyoni xmd",
   "logo": "https://files.catbox.moe/jfbed2.jpg",
   "keywords": ["bot"],
   "success_url": "/",
 
-    "stack": "container",
+  "stack": "container",
   "env": {
     "SESSION_ID": {
       "description": "Put the session-id here.",
@@ -95,7 +95,7 @@
     "BOT_NAME": {
       "description": "write hear your name.",
       "required": true,
-      "value": "✦ 𝗫𝗧𝗥𝗘𝗠𝗘 𝗫𝗠𝗗 ✦"
+      "value": "✦ XERO-MD ✦"
     }, 
 
     "HEART_REACT": {
@@ -106,10 +106,10 @@
 
 },
 
-     "buildpacks": [
-        {
-            "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
-        }
-     ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
+    }
+  ],
   "stack": "heroku-24"
 }
