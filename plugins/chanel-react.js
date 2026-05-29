@@ -72,13 +72,13 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
         await conn.newsletterReactMessage(channelMeta.id, messageId, emoji);
 
-        return reply(`╭─ 「 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 」
+        return reply(`╭─ 「 *\`XERO-MD\`* 」
 ┃▸ *sᴜᴄᴄᴇss!* ʀᴇᴀᴄᴛɪᴏɴ sᴇɴᴛ
 ┃▸ *ᴄʜᴀɴɴᴇʟ:* ${channelMeta.name}
 ┃▸ *ʀᴇᴀᴄᴛɪᴏɴ:* ${emoji}
 ╰────────────────┈⊷
 
-> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ sɪᴅ*`);
+> *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`);
 
     } catch (e) {
 
@@ -90,4 +90,4 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
 
 });
 
-// *ᴘᴏᴡᴇʀᴇᴅ ʙʏ DAVINCS* 
+// *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*
