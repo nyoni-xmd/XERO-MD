@@ -26,7 +26,7 @@ cmd({
       changelog = localData.changelog;
     }
 
-    const rawVersionUrl = 'https://raw.githubusercontent.com/PrinceXtremeX/XTREME-XMD/main/data/version.json';
+    const rawVersionUrl = 'https://raw.githubusercontent.com/nyoni-xmd/XERO-MD/main/data/version.json';
     let latestVersion = 'Unknown';
     let latestChangelog = 'No changelog available.';
     try {
@@ -47,18 +47,18 @@ cmd({
     const hostName = os.hostname();
     const lastUpdate = fs.statSync(localVersionPath).mtime.toLocaleString();
 
-    const githubRepo = 'https://github.com/PrinceXtremeX/XTREME-XMD';
+    const githubRepo = 'https://github.com/nyoni-xmd/XERO-MD';
 
     // Dynamic update message
-    let updateMessage = `✅ xᴛʀᴇᴍᴇ-ᴍᴅx ᴜᴘᴅᴀᴛᴇᴅ!`;
+    let updateMessage = `✅ XERO-MD UPDATED!`;
     if (localVersion !== latestVersion) {
       updateMessage = `🚀 *Your bot is outdated!*\n🔹 *Current Version:* ${localVersion}\n🔹 *Latest Version:* ${latestVersion}\n\nUse *.update* to update now.`;
     }
 
-    const statusMessage = `> *ᴄʜᴇᴄᴋ ᴜᴘᴅᴀᴛᴇ ʙʏ xᴛʀᴇᴍᴇ*
+    const statusMessage = `> *ᴄʜᴇᴄᴋ ᴜᴘᴅᴀᴛᴇ ʙʏ XERO-MD*
 ╭──❍ *🚀᪳ᴄʜᴇᴄᴋ ᴜᴘᴅᴀᴛᴇ* ❍
 │🌟 *ʜɪ : ${pushname}!*
-│📌 *ʙᴏᴛ ɴᴀᴍᴇ : xᴛʀᴇᴍᴇ ᴍᴅx*
+│📌 *ʙᴏᴛ ɴᴀᴍᴇ : XERO-MD*
 │🔖 *ᴄᴜʀʀᴇɴᴛ ᴠᴇʀsɪᴏɴ : ${localVersion}*
 │📢 *ʟᴀᴛᴇsᴛ ᴠᴇʀsɪᴏɴ : ${latestVersion}*
 │📂 *ᴛᴏᴛᴀʟ ᴘʟᴜɢɪɴs : ${pluginCount}*
@@ -66,7 +66,7 @@ cmd({
 │❍ *ᴍᴜʟᴛɪ ᴅᴇᴠɪᴄᴇ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ*
 ╰────────────────❍
 ╭──❍ *💾᪳sʏsᴛᴇᴍᴇ ɪɴғᴏ* ❍
-│👤 *ᴅᴇᴠ : ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*
+│👤 *ᴅᴇᴠ : NYONI XMD*
 │📟 *ʀᴀᴍ ᴜsᴀɢᴇ : ${ramUsage}ᴍʙ*
 │📟 *ᴛᴏᴛᴀʟ ʀᴀᴍ ${totalRam}ᴍʙ*
 │📅 *ᴜᴘᴅᴀᴛᴇ : ${lastUpdate}*
@@ -76,7 +76,7 @@ cmd({
 │⭐ *ʀᴇᴘᴏ : ${githubRepo}*
 │ *ᴅᴏɴ'ᴛ ғᴏʀɢᴇᴛ ᴛᴏ ғᴏʀᴋ,sᴛᴀʀ ᴛʜᴇ ʀᴇᴘᴏ!*
 ╰────────────────❍
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`;
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`;
 
     await conn.sendMessage(from, {
       image: { url: 'https://files.catbox.moe/syhqd6.jpg' },
@@ -87,7 +87,7 @@ cmd({
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterJid: '120363418161689316@newsletter',
-          newsletterName: '𝗫𝗧𝗥𝗘𝗠𝗘-𝗫𝗠𝗗',
+          newsletterName: 'XERO-MD',
           serverMessageId: 143
         }
       }
