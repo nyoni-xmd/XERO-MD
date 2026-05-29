@@ -22,7 +22,7 @@ cmd(
     async (conn, mek, m, { quoted, args, q, reply, from }) => {
         if (!mek.quoted) return reply(`*_ʀᴇᴘʟʏ ᴛᴏ ᴀɴʏ sᴛɪᴄᴋᴇʀ_*`);
         if (!q) return reply(`*_ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴘᴀᴄᴋ ɴᴀᴍᴇ_*
-> *ᴇxᴇᴍᴘʟᴇ .ᴛᴀᴋᴇ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`);
+> *ᴇxᴇᴍᴘʟᴇ .ᴛᴀᴋᴇ NYONI XMD*`);
 
         let mime = mek.quoted.mtype;
         let pack = q;
@@ -60,7 +60,7 @@ cmd(
     async (conn, mek, m, { quoted, args, q, reply, from }) => {
         if (!mek.quoted) return reply(`*_ʀᴇᴘʟʏ ᴛᴏ ᴀɴʏ ɪᴍᴀɢᴇ ᴏʀ ᴠɪᴅᴇᴏ, sɪʀ._*`);
         let mime = mek.quoted.mtype;
-        let pack = Config.STICKER_NAME || "𖢗🌹᪳𝐈𝐓𝐒 𝐌𝐄🍀᪳𝐏𝐑𝐈𝐍𝐂𝐄 𝐒𝐈𝐃™🍎᪳𖢗";
+        let pack = Config.STICKER_NAME || "𖢗🌹᪳𝐈𝐓𝐒 𝐌𝐄🍀᪳𝐍𝐘𝐎𝐍𝐈 𝐗𝐌𝐃🍎᪳𖢗";
         
         if (mime === "imageMessage" || mime === "stickerMessage") {
             let media = await mek.quoted.download();
@@ -80,5 +80,4 @@ cmd(
     }
 );
 
-// JawadTechX
-              
+// NYONI XMD STICKER BOT
