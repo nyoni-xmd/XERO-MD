@@ -65,7 +65,7 @@ cmd({
         // Envoi de la vidéo
         await conn.sendMessage(m.chat, {
             video: { url: videoUrl },
-            caption: "```Powered By OVL-MD```"
+            caption: "```Powered By XERO-MD```"
         }, { quoted: mek });
 
         // Nettoyage
