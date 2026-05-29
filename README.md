@@ -1,7 +1,7 @@
 # 🚀 XERO-MD - WhatsApp Bot
 
 <div align="center">
-<img src="https://files.catbox.moe/jfbed2.jpg" alt="XERO-MD" width="300"/>
+<img src="https://files.catbox.moe/gyaka2.png" alt="XERO-MD" width="300"/>
   
 ### ⚡ ADVANCED WHATSAPP BOT ⚡
 
