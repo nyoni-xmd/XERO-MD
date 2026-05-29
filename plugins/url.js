@@ -59,13 +59,13 @@ cmd({
     const userName = message.pushName || 'User';
 
     await reply(
-`╭━━「 *\`𝐗𝐓𝐑𝐄𝐌𝐄-𝐗𝐌𝐃\`* 」
+`╭━━「 *\`XERO-MD\`* 」
 ┃ *sɪᴢᴇ: ${formatBytes(mediaBuffer.length)}*
 ┃ *ᴛɪᴍᴇ: ${timestamp}*
 ┃ *ᴍᴇᴅɪᴀ: ${mediaType} ᴜᴘʟᴏᴀᴅᴇᴅ*
 ┃ *ᴜʀʟ: ${mediaUrl}*
 ╰━━━━━━━━━━━━━━━━━━❍
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ* `
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ nyoni xmd* `
     );
 
   } catch (error) {
