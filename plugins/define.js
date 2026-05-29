@@ -1,32 +1,29 @@
-
-
-
 const axios = require('axios');
-                         const {cmd , commands} = require('../command');
+const {cmd , commands} = require('../command');
 
-                         cmd({
-                             pattern: "define",
-                             desc: "📚 Get the definition of a word",
-                             react: "🧠",
-                             category: "utility",
-                             filename: __filename
-                         },
-                         async (conn, mek, m, { from, q, reply }) => {
-                             try {
-                                 if (!q) return reply("❗ Please provide a word to define. Usage: .define [word]");
+cmd({
+    pattern: "define",
+    desc: "📚 Get the definition of a word",
+    react: "🧠",
+    category: "utility",
+    filename: __filename
+},
+async (conn, mek, m, { from, q, reply }) => {
+    try {
+        if (!q) return reply("❗ Please provide a word to define. Usage: .define [word]");
 
-                                 const word = q;
-                                 const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
+        const word = q;
+        const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`;
 
-                                 const response = await axios.get(url);
-                                 const definitionData = response.data[0];
+        const response = await axios.get(url);
+        const definitionData = response.data[0];
 
-                                 const definition = definitionData.meanings[0].definitions[0].definition;
-                                 const example = definitionData.meanings[0].definitions[0].example || 'No example available';
-                                 const synonyms = definitionData.meanings[0].definitions[0].synonyms.join(', ') || 'No synonyms available';
+        const definition = definitionData.meanings[0].definitions[0].definition;
+        const example = definitionData.meanings[0].definitions[0].example || 'No example available';
+        const synonyms = definitionData.meanings[0].definitions[0].synonyms.join(', ') || 'No synonyms available';
 
-const wordInfo = `
-XTREME XMD DEFINE🕹️
+        const wordInfo = `
+XERO-MD DEFINE🕹️
 
 📚 *Word*: ${definitionData.word}
 
@@ -36,14 +33,14 @@ XTREME XMD DEFINE🕹️
 
 🔗 *Synonyms*: ${synonyms}
 
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`;
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`;
 
-                                 return reply(wordInfo);
-                             } catch (e) {
-                                 console.log(e);
-                                 if (e.response && e.response.status === 404) {
-                                     return reply("🚫 Word not found. Please check the spelling and try again.");
-                                 }
-                                 return reply("⚠️ An error occurred while fetching the definition. Please try again later.");
-                             }
-                         });
+        return reply(wordInfo);
+    } catch (e) {
+        console.log(e);
+        if (e.response && e.response.status === 404) {
+            return reply("🚫 Word not found. Please check the spelling and try again.");
+        }
+        return reply("⚠️ An error occurred while fetching the definition. Please try again later.");
+    }
+});
