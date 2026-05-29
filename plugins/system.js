@@ -1,4 +1,3 @@
-
 const { cmd } = require('../command');
 const { runtime } = require('../lib/functions');
 const config = require('../config');
@@ -20,56 +19,56 @@ async (conn, mek, m, { from, reply, args }) => {
         const version = pkg.version || "1.0.0";
 
         const styles = [
-`╭──『 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 』
+`╭──『 *\`XERO-MD\`* 』
 │ ⏱️ ${uptime}
 │ 🧭 ${seconds} seconds
 │ 🚀 Started: ${startTime.toLocaleString()}
 ╰──────────────⭑─➤
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`,
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`,
 
-`╭─ 「 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 」
+`╭─ 「 *\`XERO-MD\`* 」
 │♢ ʀᴜɴɴɪɴɢ: ${uptime}
 │♢ sᴇᴄᴏɴᴅs: ${seconds}
 │♢ sɪɴᴄᴇ: ${startTime.toLocaleDateString()}
 ╰──────────────⭑─➤
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`,
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`,
 
-`╭─ 「 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 」
+`╭─ 「 *\`XERO-MD\`* 」
 │ • ᴛɪᴍᴇ: ${uptime}
 │ • sᴇᴄᴏɴᴅs: ${seconds}
 │ • sᴛᴀʀᴛᴇᴅ: ${startTime.toLocaleString()}
 ╰━━━━━━━━━━━━━━⭑━➤
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`,
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`,
 
-`╭─ 「 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 」
+`╭─ 「 *\`XERO-MD\`* 」
 │ ⏳ ${uptime}
 │ 🕰️ ${startTime.toLocaleString()}
 │ 🔢 ${seconds} sᴇᴄᴏɴᴅs
 ╰──────────────⭑─➤
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`,
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`,
 
 `
-╭─ 「 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 」
+╭─ 「 *\`XERO-MD\`* 」
 │  ʀᴜɴᴛɪᴍᴇ: ${uptime}
 │  sᴇᴄᴏɴᴅs:: ${seconds}
 │  sɪɴᴄᴇʀᴇʟʏ: ${startTime.toLocaleString()}
 ╰━━━━━━━━━━━━━━⭑━➤
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`,
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`,
 
-`> ╭━ 「 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 」
+`> ╭━ 「 *\`XERO-MD\`* 」
 > ┃🟢 ᴏɴʟɪɴᴇ ғᴏʀ: ${uptime}
 > ┃🔢 sᴇᴄᴏɴᴅs: ${seconds}
 > ┃📅 sɪɴᴄᴇ: ${startTime.toLocaleString()}
 > ╰━━━━━━━━━━━━━━⭑━➤
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`,
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`,
 
-`╭─ 「 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 」
+`╭─ 「 *\`XERO-MD\`* 」
 │◈ ᴅᴜʀᴀᴛɪᴏɴ: ${uptime}
 │◈ sᴇᴄᴏɴᴅs: ${seconds}
 │◈ sᴛᴀʀᴛ ᴛɪᴍᴇs: ${startTime.toLocaleString()}
 │◈ sᴛᴀʙɪʟɪᴛʏ: 100%
 ╰────────────────❂
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`
         ];
 
         let selectedStyle;
@@ -93,7 +92,7 @@ async (conn, mek, m, { from, reply, args }) => {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363418161689316@newsletter',
-                    newsletterName: '𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃',
+                    newsletterName: 'XERO-MD',
                     serverMessageId: 143
                 }
             }
