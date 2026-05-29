@@ -1,14 +1,14 @@
 {
-    "bot-name": "𝗫𝗧𝗥𝗘𝗠𝗘-𝗫𝗠𝗗",
-    "description": "ᴊᴀᴠᴀsᴄʀɪᴘᴛ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ ᴄʀᴇᴀᴛᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ",
+    "bot-name": "XERO-MD",
+    "description": "ᴊᴀᴠᴀsᴄʀɪᴘᴛ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ ᴄʀᴇᴀᴛᴇᴅ ʙʏ nyoni xmd",
     "logo": "https://files.catbox.moe/jfbed2.jpg",
     "keywords": ["bot"],
-    "documentation-link": "https://haiko-mdx-v2-session.onrender.com",
-    "owner-verification":"princextreme429@gmail.com",
+    "documentation-link": "",
+    "owner-verification":"xmdnyoni@gmail.com",
   
     "env": {
       "SESSION_ID": {
-        "description": "Put your SESSION_ID here. Make sure it starts with XTREME-XMD;;;, or get session id from here, https://crazy-sess.onrender.com",
+        "description": "Put your SESSION_ID here. Make sure it starts with XERO-XMD~, or get session id from here, https://crazy-sess.onrender.com",
         "value":"",
         "required": true
         
@@ -71,7 +71,7 @@
       "BOT_NAME": {
         "description": "write her your name.",
         "required": true,
-        "value": "𝗫𝗧𝗥𝗘𝗠𝗘-𝗫𝗠𝗗"
+        "value": "XERO-MD"
         
       },
       "ANTI_LINK": {
