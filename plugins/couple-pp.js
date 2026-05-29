@@ -68,14 +68,14 @@ cmd({
     if (male) {
       await conn.sendMessage(from, {
         'image': { 'url': male },
-        'caption': "*👨 ɪᴍᴀɢᴇ ᴅᴇ ᴘʀᴏғɪʟ ᴅᴜ ᴄᴏᴜᴘʟᴇ ᴍᴀsᴄᴜʟɪɴ*\n\n\> *ᴄᴏᴜᴘʟᴇ ᴘᴘ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*"
+        'caption': "*👨 ɪᴍᴀɢᴇ ᴅᴇ ᴘʀᴏғɪʟ ᴅᴜ ᴄᴏᴜᴘʟᴇ ᴍᴀsᴄᴜʟɪɴ*\n\n\> *ᴄᴏᴜᴘʟᴇ ᴘᴘ ʙʏ NYONI XMD*"
       }, { 'quoted': m });
     }
 
     if (female) {
       await conn.sendMessage(from, {
         'image': { 'url': female },
-        'caption': "*👩 ɪᴍᴀɢᴇ ᴅᴇ ᴘʀᴏғɪʟ ᴅᴜ ᴄᴏᴜᴘʟᴇ ғᴇ́ᴍɪɴɪɴ*\n\n\> *ᴄᴏᴜᴘʟᴇ ᴘᴘ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*"
+        'caption': "*👩 ɪᴍᴀɢᴇ ᴅᴇ ᴘʀᴏғɪʟ ᴅᴜ ᴄᴏᴜᴘʟᴇ ғᴇ́ᴍɪɴɪɴ*\n\n\> *ᴄᴏᴜᴘʟᴇ ᴘᴘ ʙʏ NYONI XMD*"
       }, { 'quoted': m });
     }
 
