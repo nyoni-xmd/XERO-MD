@@ -31,7 +31,7 @@ async (conn, mek, m, { from, quoted, body, isCmd, command, args, q, isGroup, sen
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: '120363418161689316@newsletter',
-                        newsletterName: "𝐗𝐓𝐑𝐄𝐌𝐄-𝐗𝐌𝐃",
+                        newsletterName: "XERO-MD",
                         serverMessageId: 143
                     }
                 }
