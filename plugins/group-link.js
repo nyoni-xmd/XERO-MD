@@ -37,15 +37,15 @@ cmd({
         const groupId = groupMetadata.id || from;
         const memberCount = groupMetadata.participants.length;
 
-        const infoText = `╭─ 「 *\`𝐌𝐈𝐍𝐈-𝐁𝐎𝐓\`* 」
+        const infoText = `╭─ 「 *\`XERO-MD\`* 」
 ┃ *ᴍᴇᴍʙᴇʀs* *#${memberCount}*
-┃ *ᴘʀᴏᴘʀɪᴏ* *\`ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ\`*
+┃ *ᴘʀᴏᴘʀɪᴏ* *\`NYONI XMD\`*
 ┃ *ᴏᴡɴᴇʀ* ${groupOwner}
 ┃ *ɢ ɴᴀᴍᴇ* ${groupName}
 ┃ *ɢʀᴏᴜᴘ ɪᴅ* ${groupId}
 ┃ *ɢ ʟɪɴᴋ* ${inviteLink}
 ╰────────────────❍
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ*`;
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`;
 
         let ppUrl;
         try {
