@@ -16,17 +16,17 @@ async (conn, mek, m, { from, args, prefix, reply }) => {
         // Si aucun argument → montrer la liste des styles
         if (!args.length) {
             return reply(
-                `╭─ 「 *\`𝐅𝐀𝐍𝐂𝐘 𝐒𝐓𝐘𝐋𝐄\`* 」\n│EXAMPLE: FANCY 10 XTREMEXMD\n│` +
+                `╭─ 「 *\`FANCY STYLE\`* 」\n│EXAMPLE: FANCY 10 XERO-MD\n│` +
                 String.fromCharCode(8206).repeat(4001) + 
-                fancy.list('XTREME XMD', fancy)
+                fancy.list('XERO-MD', fancy)
             );
         }
 
         if (!id || !text) {
             return reply(
-                `Example: ${prefix}fancy 10 XTREME-XMD\n` +
+                `Example: ${prefix}fancy 10 XERO-MD\n` +
                 String.fromCharCode(8206).repeat(4001) + 
-                fancy.list('XTREME-XMD', fancy)
+                fancy.list('XERO-MD', fancy)
             );
         }
 
