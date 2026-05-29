@@ -1,13 +1,10 @@
-
-
-
 const { cmd } = require("../command");
 const moment = require("moment");
 const config = require('../config');
 
 
 let botStartTime = Date.now(); // Enregistrement de l'heure de démarrage du bot
-const ALIVE_IMG = "https://files.catbox.moe/n0qu1i.jpg"; // Assurez-vous que cette URL est valide
+const ALIVE_IMG = "https://files.catbox.moe/gyaka2.png"; // Image updated to XERO-MD
 
 cmd({
     pattern: "alive",
@@ -26,9 +23,9 @@ cmd({
         const runtimeMinutes = Math.floor((runtimeMilliseconds / (1000 * 60)) % 60);
         const runtimeHours = Math.floor(runtimeMilliseconds / (1000 * 60 * 60));
 
-        const formattedInfo = `╭─ 「 *\`𝐗𝐓𝐑𝐄𝐌𝐄 𝐗𝐌𝐃\`* 」
+        const formattedInfo = `╭─ 「 *\`XERO-MD\`* 」
 │✨ *ʙᴏᴛ ɪs ᴀᴄᴛɪᴠᴇ & ᴏɴʟɪɴᴇ!*
-│🧠 *ᴏᴡɴᴇʀ:* ${config.OWNER_NAME}
+│🧠 *ᴏᴡɴᴇʀ:* NYONI XMD
 │⚡ *ᴠᴇʀsɪᴏɴ:* 2.0.0
 │🕒 *ᴛɪᴍᴇ* : ${currentTime}
 │📳 *ᴍᴏᴅᴇ:* [${config.MODE}]
@@ -51,7 +48,7 @@ cmd({
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363418161689316@newsletter',
-                    newsletterName: '𝗫𝗧𝗥𝗘𝗠𝗘-𝗫𝗠𝗗',
+                    newsletterName: 'XERO-MD',
                     serverMessageId: 143
                 }
             }
@@ -68,7 +65,7 @@ cmd({
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363418161689316@newsletter',
-                    newsletterName: '𝗫𝗧𝗥𝗘𝗠𝗘-𝗫𝗠𝗗🎶',
+                    newsletterName: 'XERO-MD🎶',
                     serverMessageId: 143
                 }
             }
