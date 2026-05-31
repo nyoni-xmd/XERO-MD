@@ -1,5 +1,4 @@
 
-
 const {
 default: makeWASocket,
 useMultiFileAuthState,
@@ -393,4 +392,39 @@ command.function(conn, mek, m,{from, l, quoted, body, isCmd, command, args, q, t
                 if (mime === "application/pdf") { return conn.sendMessage(jid, { document: await getBuffer(url), mimetype: 'application/pdf', caption: caption, ...options }, { quoted: quoted, ...options }) }
                 if (mime.split("/")[0] === "image") { return conn.sendMessage(jid, { image: await getBuffer(url), caption: caption, ...options }, { quoted: quoted, ...options }) }
                 if (mime.split("/")[0] === "video") { return conn.sendMessage(jid, { video: await getBuffer(url), caption: caption, mimetype: 'video/mp4', ...options }, { quoted: quoted, ...options }) }
-                if (mime.split("/")[0] === "audio") 
+                if (mime.split("/")[0] === "audio") { return conn.sendMessage(jid, { audio: await getBuffer(url), caption: caption, mimetype: 'audio/mpeg', ...options }, { quoted: quoted, ...options }) }
+              }
+
+// =========== ONGEZA HII KUSUBIRI SESSION ===========
+let isConnected = false;
+
+// Timeout baada ya sekunde 30 - ikiwa haija connect, subiri tena
+setTimeout(() => {
+    if (!isConnected) {
+        console.log('⚠️ Bot bado haija connect, inasubiri session...');
+        console.log('⚠️ Hakikisha SESSION_ID yako ni sahihi');
+    }
+}, 30000);
+
+// =========== ONGEZA HII KUSIMAMISHA CRASH ===========
+process.on('uncaughtException', (err) => {
+    console.error('❌ Uncaught Exception:', err.message);
+    // Usiue bot, endelea
+});
+
+process.on('unhandledRejection', (err) => {
+    console.error('❌ Unhandled Rejection:', err);
+    // Usiue bot, endelea
+});
+// =================================================
+
+connectToWA()
+
+app.get("/", (req, res) => {
+    res.send("XERO-MD is running!");
+});
+
+app.listen(port, () => {
+    console.log(`XERO-MD is running on port ${port}`);
+});
+```
