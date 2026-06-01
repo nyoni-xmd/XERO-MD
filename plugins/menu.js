@@ -1,6 +1,7 @@
-const { cmd } = require('./command.js');
 const config = require('../config');
 const moment = require('moment-timezone');
+const { cmd, commands, commandsArray } = require('../command');
+const axios = require('axios');
 
 const smallCaps = {
   "A": "ᴀ", "B": "ʙ", "C": "ᴄ", "D": "ᴅ", "E": "ᴇ", "F": "ꜰ", "G": "ɢ", "H": "ʜ",
@@ -24,9 +25,9 @@ cmd({
 },
 async (conn, mek, m, { from, reply, prefix }) => {
   try {
-    // Get commands from global
-    const commandsList = global.commandsArray || [];
-    const totalCommands = commandsList.length;
+    // Get all commands from global
+    const allCommands = global.commandsArray || [];
+    const totalCommands = allCommands.length;
     
     const uptime = () => {
       let sec = process.uptime();
@@ -36,54 +37,70 @@ async (conn, mek, m, { from, reply, prefix }) => {
       return `${h}h ${m}m ${s}s`;
     };
 
-    let menuText = `╭━━━━━━━━━━━━━━━━━━╮
-│   *XERO-MD MENU*
-╰━━━━━━━━━━━━━━━━━━╯
-
-╭─〔 BOT INFO 〕─╮
-│ 👤 USER: @${m.sender.split("@")[0]}
-│ ⏱️ RUNTIME: ${uptime()}
-│ 📳 MODE: ${config.MODE || 'public'}
-│ 🔧 PREFIX: ${prefix || '.'}
-│ 📦 PLUGINS: ${totalCommands}
-│ 👨‍💻 DEV: nyoni-xmd
-│ 📞 NUMBER 1: +255763111390
-│ 📞 NUMBER 2: +255610209120
-│ 🔢 VERSION: 3.0.0
-╰───────────────╯
+    // Header menu
+    let menuText = `*╭━━*『 XERO-MD 』
+*┃* ❃ *ᴜsᴇʀ* : @${m.sender.split("@")[0]}
+*┃* ❃ *ʀᴜɴᴛɪᴍᴇ* : ${uptime()}
+*┃* ❃ *ᴍᴏᴅᴇ* : ${config.MODE}
+*┃* ❃ *ᴘʀᴇғɪx* : [${prefix || '.'}]
+*┃* ❃ *ᴩʟᴜɢɪɴ* : ${totalCommands}
+*┃* ❃ *ᴅᴇᴠ* : *\`nyoni-xmd\`*
+*┃* ❃ *ɴᴜᴍʙᴇʀ 1* : +255763111390
+*┃* ❃ *ɴᴜᴍʙᴇʀ 2* : +255610209120
+*┃* ❃ *ᴠᴇʀsɪᴏɴ* : 3.0.0
+*╰────────────────❍*
 
 `;
 
     // Group commands by category
     let category = {};
-    for (let cmd of commandsList) {
+    for (let cmd of allCommands) {
       if (!cmd.category) continue;
       if (!category[cmd.category]) category[cmd.category] = [];
       category[cmd.category].push(cmd);
     }
 
-    const keys = Object.keys(category).sort();
+    // Sort categories
+    const categoryOrder = ["menu", "convert", "download", "downloader", "fun", "game", "group", "img_edit", "info", "logo", "main", "media", "misc", "music", "other", "owner", "private", "settings", "status", "sticker", "tools", "utility"];
+    
+    const keys = Object.keys(category).sort((a, b) => {
+      return categoryOrder.indexOf(a) - categoryOrder.indexOf(b);
+    });
+    
     for (let k of keys) {
-      menuText += `\n╭─ 「 ${k.toUpperCase()} 」─╮`;
-      const cmds = category[k].filter(c => c.pattern);
+      if (category[k].length === 0) continue;
+      menuText += `\n*╭─ 「 \`${k.toUpperCase()} MENU\`* 」`;
+      const cmds = category[k].filter(c => c.pattern).sort((a, b) => a.pattern.localeCompare(b.pattern));
       cmds.forEach((cmd) => {
         const usage = cmd.pattern.split('|')[0];
-        menuText += `\n│ ⤷ ${prefix || '.'}${usage}`;
+        menuText += `\n*│⤷ ${prefix || '.'}${toSmallCaps(usage)}*`;
       });
-      menuText += `\n╰───────────────╯`;
+      menuText += `\n*╰──────────────⭑━➤*`;
     }
 
-    menuText += `\n\n> POWERED BY nyoni-xmd
-⚡ POWER - SPEED - CONTROL
-🚀 BEYOND LIMITS`;
-
-    await conn.sendMessage(from, {
-      image: { url: 'https://files.catbox.moe/gyaka2.png' },
-      caption: menuText,
-      contextInfo: {
-        mentionedJid: [m.sender]
-      }
-    }, { quoted: mek });
+    // Send menu with image
+    try {
+      await conn.sendMessage(from, {
+        image: { url: 'https://files.catbox.moe/gyaka2.png' },
+        caption: menuText,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: '120363418161689316@newsletter',
+            newsletterName: 'XERO-MD',
+            serverMessageId: 143
+          }
+        }
+      }, { quoted: mek });
+    } catch (imgError) {
+      // If image fails, send as text
+      await conn.sendMessage(from, {
+        text: menuText,
+        contextInfo: { mentionedJid: [m.sender] }
+      }, { quoted: mek });
+    }
 
   } catch (e) {
     console.error(e);
