@@ -11,15 +11,9 @@ module.exports = {
     AUTO_STATUS_REPLY: process.env.AUTO_STATUS_REPLY || "false",
     AUTO_STATUS_MSG: process.env.AUTO_STATUS_MSG || "*SEEN YOUR STATUS BY XERO-MD*",
     AUTO_REACT: process.env.AUTO_REACT || "false",
-    CUSTOM_REACT: process.env.CUSTOM_REACT || "false",
-    CUSTOM_REACT_EMOJIS: process.env.CUSTOM_REACT_EMOJIS || "❤️,🔥,💯,✨,⭐",
     BOT_NAME: process.env.BOT_NAME || "XERO-MD",
     OWNER_NAME: process.env.OWNER_NAME || "nyoni-xmd",
     OWNER_NUMBER: process.env.OWNER_NUMBER || "255763111390,255610209120",
     DEV: process.env.DEV || "255763111390",
-    ALWAYS_ONLINE: process.env.ALWAYS_ONLINE || "true",
-    WELCOME: process.env.WELCOME || "false",
-    ANTI_LINK: process.env.ANTI_LINK || "false",
-    ANTI_BAD: process.env.ANTI_BAD || "false",
-    ANTI_DEL_PATH: process.env.ANTI_DEL_PATH || "log"
+    ALWAYS_ONLINE: process.env.ALWAYS_ONLINE || "true"
 }
