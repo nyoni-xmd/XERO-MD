@@ -64,11 +64,12 @@ async (conn, mek, m, { from, reply }) => {
 *┃* ❃ *ᴍᴏᴅᴇ* : ${config.MODE}
 *┃* ❃ *ᴘʀᴇғɪx* : [${config.PREFIX}]
 *┃* ❃ *ᴩʟᴜɢɪɴ* : ${totalCommands}
-*┃* ❃ *ᴅᴇᴠ* : *nyoni-xmd*
+*┃* ❃ *ᴅᴇᴠ* : *\`nyoni-xmd\`*
 *┃* ❃ *ɴᴜᴍʙᴇʀ 1* : +255763111390
 *┃* ❃ *ɴᴜᴍʙᴇʀ 2* : +255610209120
 *┃* ❃ *ᴠᴇʀsɪᴏɴ* : 3.0.0
 *╰────────────────❍*
+
 `;
 
     let category = {};
@@ -89,35 +90,21 @@ async (conn, mek, m, { from, reply }) => {
       menuText += `\n*╰──────────────⭑━➤*`;
     }
 
-    // Try to send with image
-    try {
-      await conn.sendMessage(from, {
-        image: { url: 'https://files.catbox.moe/gyaka2.png' },
-        caption: menuText,
-        contextInfo: {
-          mentionedJid: [m.sender],
-          forwardingScore: 999,
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterJid: '120363418161689316@newsletter',
-            newsletterName: 'XERO-MD',
-            serverMessageId: 143
-          }
+    // Send menu with image
+    await conn.sendMessage(from, {
+      image: { url: 'https://files.catbox.moe/gyaka2.png' },
+      caption: menuText,
+      contextInfo: {
+        mentionedJid: [m.sender],
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: '120363418161689316@newsletter',
+          newsletterName: 'XERO-MD',
+          serverMessageId: 143
         }
-      }, { quoted: mek });
-    } catch (imgError) {
-      // If image fails, send as text
-      console.log('Image send failed, sending text menu');
-      await conn.sendMessage(from, {
-        text: menuText,
-        contextInfo: {
-          mentionedJid: [m.sender]
-        }
-      }, { quoted: mek });
-    }
-
-    // Try to send audio (optional - audio URL imekatika 404)
-    // Ikiwa unataka kuondoa audio, hii sehemu imeachwa
+      }
+    }, { quoted: mek });
 
   } catch (e) {
     console.error(e);
