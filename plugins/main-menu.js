@@ -90,21 +90,61 @@ async (conn, mek, m, { from, reply }) => {
       menuText += `\n*╰──────────────⭑━➤*`;
     }
 
-    // Send menu with image
-    await conn.sendMessage(from, {
-      image: { url: 'https://files.catbox.moe/gyaka2.png' },
-      caption: menuText,
-      contextInfo: {
-        mentionedJid: [m.sender],
-        forwardingScore: 999,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363418161689316@newsletter',
-          newsletterName: 'XERO-MD',
-          serverMessageId: 143
-        }
+    // IMAGE URL - USE RELIABLE IMAGE HOSTING
+    const imageUrl = 'https://files.catbox.moe/gyaka2.png';
+    
+    // Alternative images in case first fails
+    const backupImages = [
+      'https://telegra.ph/file/8b2b8e4e5c5e5c5e5c5e5.png',
+      'https://files.catbox.moe/gyaka2.png'
+    ];
+
+    // Try to send with image
+    try {
+      // Download and verify image first
+      const imageCheck = await axios.get(imageUrl, { timeout: 5000 });
+      if (imageCheck.status === 200) {
+        await conn.sendMessage(from, {
+          image: { url: imageUrl },
+          caption: menuText,
+          contextInfo: {
+            mentionedJid: [m.sender],
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterJid: '120363418161689316@newsletter',
+              newsletterName: 'XERO-MD',
+              serverMessageId: 143
+            }
+          }
+        }, { quoted: mek });
+      } else {
+        throw new Error('Image not accessible');
       }
-    }, { quoted: mek });
+    } catch (imgError) {
+      console.log('Image send failed, trying backup...');
+      try {
+        // Try backup image
+        await conn.sendMessage(from, {
+          image: { url: backupImages[0] },
+          caption: menuText,
+          contextInfo: {
+            mentionedJid: [m.sender],
+            forwardingScore: 999,
+            isForwarded: true
+          }
+        }, { quoted: mek });
+      } catch (backupError) {
+        console.log('Backup image also failed, sending text only');
+        // Send as text only
+        await conn.sendMessage(from, {
+          text: menuText,
+          contextInfo: {
+            mentionedJid: [m.sender]
+          }
+        }, { quoted: mek });
+      }
+    }
 
   } catch (e) {
     console.error(e);
