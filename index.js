@@ -10,9 +10,7 @@ const {
   fetchLatestBaileysVersion,
   Browsers,
   downloadContentFromMessage,
-  proto,
-  prepareWAMessageMedia,
-  generateWAMessageContent
+  proto
 } = require('@whiskeysockets/baileys')
 
 const fs = require('fs')
@@ -25,7 +23,6 @@ const axios = require('axios')
 const util = require('util')
 const FileType = require('file-type')
 const os = require('os')
-const qrcode = require('qrcode-terminal')
 const { sms, AntiDelete } = require('./lib')
 const GroupEvents = require('./lib/groupevents')
 const { saveMessage } = require('./data')
@@ -57,7 +54,7 @@ function getCommand(cmdName) {
     return command
 }
 
-// ============ DEFAULT COMMANDS ============
+// ============ DEFAULT COMMANDS (PUBLIC) ============
 registerCommand({
     command: 'menu',
     alias: ['help', 'cmd'],
@@ -79,7 +76,7 @@ registerCommand({
 │ Bot: XERO-MD
 │ Dev: nyoni-xmd
 │ Prefix: ${prefix}
-│ Mode: ${config.MODE}
+│ Mode: PUBLIC ✅
 ╰─────────────╯
 
 > POWERED BY nyoni-xmd`
@@ -97,10 +94,9 @@ registerCommand({
 
 registerCommand({
     command: 'alive',
-    alias: ['alive'],
     description: 'Check bot status',
     function: async (conn, mek, m, { reply }) => {
-        reply('✨ XERO-MD is alive and running! ✨\n\n⚡ Power - Speed - Control\n🚀 Beyond Limits')
+        reply('✨ XERO-MD is alive and running! ✨\n\n⚡ Power - Speed - Control\n🚀 Beyond Limits\n\n✅ Mode: PUBLIC - Everyone can use')
     }
 })
 
@@ -115,7 +111,9 @@ registerCommand({
 │ Number: +255763111390
 │ Number 2: +255610209120
 │ Bot: XERO-MD
-╰━━━━━━━━━━━━━━━╯`)
+╰━━━━━━━━━━━━━━━╯
+
+💬 *Bot is PUBLIC* - Anyone can use!`)
     }
 })
 
@@ -147,7 +145,7 @@ if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
         console.log('========================================')
     } else {
         console.log('📥 Inapakua session...')
-        const sessdata = config.SESSION_ID.replace("XERO-MD>>>", '').replace("jamali~", '')
+        const sessdata = config.SESSION_ID.replace("jamali~", '').replace("jamali~", '')
         const filer = File.fromURL(`https://mega.nz/file/${sessdata}`)
         filer.download((err, data) => {
             if (err) {
@@ -358,24 +356,15 @@ async function connectToWA() {
                 conn.sendMessage(from, { react: { text: randomReaction, key: mek.key } }).catch(() => {})
             }
             
-            // Auto react to all messages
-            if (config.AUTO_REACT === 'true') {
-                const reactions = ['❤️', '🔥', '💯', '✨', '⭐', '👍', '😊', '🎉']
-                const randomReaction = reactions[Math.floor(Math.random() * reactions.length)]
-                conn.sendMessage(from, { react: { text: randomReaction, key: mek.key } }).catch(() => {})
-            }
+            // ============ PUBLIC MODE - KILA MTU ANAWEZA TUMIA ============
+            // HAKUNA MODE CHECKING - BOT ITAJIBU KILA MTU!
             
-            // Check mode
-            if (!isOwner && config.MODE === "private") return
-            if (!isOwner && isGroup && config.MODE === "inbox") return
-            if (!isOwner && !isGroup && config.MODE === "groups") return
-            
-            // Execute command
+            // Execute command for EVERYONE (public mode)
             if (isCmd) {
                 const cmd = getCommand(command)
                 if (cmd) {
                     try {
-                        console.log(`📝 Executing: ${command} from ${senderNumber}`)
+                        console.log(`📝 [PUBLIC] Executing: ${command} from ${senderNumber}`)
                         await cmd.function(conn, mek, { message: mek }, {
                             from, reply, body, isCmd, command, args, q, text,
                             isGroup, sender, senderNumber, botNumber,
@@ -473,15 +462,11 @@ async function connectToWA() {
     conn.sendText = (jid, text, quoted = null) => {
         return conn.sendMessage(jid, { text: text }, { quoted })
     }
-    
-    conn.sendImageAsSticker = async (jid, buff, options = {}) => {
-        await conn.sendMessage(jid, { sticker: buff }, options)
-    }
 }
 
 // ============ START SERVER ============
 app.get("/", (req, res) => {
-    res.send("XERO-MD IS RUNNING! ✅")
+    res.send("XERO-MD IS RUNNING! ✅ - PUBLIC MODE - Everyone can use")
 })
 
 app.listen(port, () => {
@@ -500,3 +485,5 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Rejection:', err)
 })
+
+console.log('✅ XERO-MD STARTED IN PUBLIC MODE - EVERYONE CAN USE!')
