@@ -33,7 +33,7 @@ const ownerNumber = ['255763111390', '255610209120']
 const app = express()
 const port = process.env.PORT || 9090
 
-// ============ COMMAND SYSTEM ============
+// ============ COMMAND SYSTEM FROM PLUGINS ============
 const commands = new Map()
 const aliases = new Map()
 
@@ -54,82 +54,12 @@ function getCommand(cmdName) {
     return command
 }
 
-// ============ DEFAULT COMMANDS ============
-registerCommand({
-    command: 'menu',
-    alias: ['help', 'cmd'],
-    description: 'Show bot menu',
-    function: async (conn, mek, m, { from, reply, prefix }) => {
-        const menu = `╭━━━━━━━━━━━━━━━━━━╮
-│   *XERO-MD MENU*
-╰━━━━━━━━━━━━━━━━━━╯
+// Export for plugins
+global.registerCommand = registerCommand;
+global.getCommand = getCommand;
+global.commands = commands;
 
-╭─〔 COMMANDS 〕─╮
-│ • ${prefix}menu - Show menu
-│ • ${prefix}ping - Check bot
-│ • ${prefix}owner - Contact owner
-│ • ${prefix}alive - Check status
-│ • ${prefix}runtime - Bot uptime
-╰───────────────╯
-
-╭─〔 INFO 〕─╮
-│ Bot: XERO-MD
-│ Dev: nyoni-xmd
-│ Prefix: ${prefix}
-│ Mode: PUBLIC ✅
-╰─────────────╯
-
-> POWERED BY nyoni-xmd`
-        reply(menu)
-    }
-})
-
-registerCommand({
-    command: 'ping',
-    description: 'Check bot response',
-    function: async (conn, mek, m, { reply }) => {
-        reply('🏓 Pong! Bot is alive ✅')
-    }
-})
-
-registerCommand({
-    command: 'alive',
-    description: 'Check bot status',
-    function: async (conn, mek, m, { reply }) => {
-        reply('✨ XERO-MD is alive and running! ✨\n\n⚡ Power - Speed - Control\n🚀 Beyond Limits\n\n✅ Mode: PUBLIC - Everyone can use')
-    }
-})
-
-registerCommand({
-    command: 'owner',
-    alias: ['creator', 'dev'],
-    description: 'Owner info',
-    function: async (conn, mek, m, { reply }) => {
-        reply(`👑 *OWNER INFORMATION*
-╭━━━━━━━━━━━━━━━╮
-│ Name: nyoni-xmd
-│ Number: +255763111390
-│ Number 2: +255610209120
-│ Bot: XERO-MD
-╰━━━━━━━━━━━━━━━╯
-
-💬 *Bot is PUBLIC* - Anyone can use!`)
-    }
-})
-
-registerCommand({
-    command: 'runtime',
-    description: 'Bot uptime',
-    function: async (conn, mek, m, { reply }) => {
-        const runtime = process.uptime()
-        const hours = Math.floor(runtime / 3600)
-        const minutes = Math.floor((runtime % 3600) / 60)
-        const seconds = Math.floor(runtime % 60)
-        reply(`⏰ *BOT UPTIME*\n┈────────────┈\n🕐 ${hours}h ${minutes}m ${seconds}s`)
-    }
-})
-
-console.log(`✅ Registered ${commands.size} commands - PUBLIC MODE ENABLED`)
+console.log(`✅ Command system ready - Waiting for plugins...`)
 
 // ============ SESSION FOLDER ============
 if (!fs.existsSync(__dirname + '/sessions')) {
@@ -197,6 +127,31 @@ const getGroupAdmins = (participants) => {
     return admins
 }
 
+// ============ LOAD PLUGINS FUNCTION ============
+function loadPlugins() {
+    console.log('🧬 Loading plugins...')
+    
+    const pluginsDir = path.join(__dirname, 'plugins')
+    if (!fs.existsSync(pluginsDir)) {
+        fs.mkdirSync(pluginsDir)
+        console.log('📁 Created plugins folder')
+    }
+    
+    const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'))
+    console.log(`📦 Found ${pluginFiles.length} plugins`)
+    
+    pluginFiles.forEach((plugin) => {
+        try {
+            require(path.join(pluginsDir, plugin))
+            console.log(`✅ Loaded: ${plugin}`)
+        } catch(e) {
+            console.log(`❌ Failed: ${plugin} - ${e.message}`)
+        }
+    })
+    
+    console.log(`✅ Total commands registered: ${commands.size}`)
+}
+
 // ============ MAIN CONNECTION ============
 async function connectToWA() {
     console.log("Connecting to WhatsApp ⏳️...")
@@ -222,6 +177,9 @@ async function connectToWA() {
         } else if (connection === 'open') {
             console.log('✅ XERO-MD CONNECTED SUCCESSFULLY!')
             
+            // Load all plugins after connection
+            loadPlugins()
+            
             const up = `╭┈───────────────╮
 │ ◦ *XERO-MD CONNECTED*
 │ ◦ *DEV* : *nyoni-xmd*
@@ -230,7 +188,7 @@ async function connectToWA() {
 │ ◦ *NUMBER 2* : +255610209120
 │ ◦ *PREFIX* : ${prefix}
 │ ◦ *MODE* : PUBLIC ✅
-│ ◦ *TYPE* : ${prefix}menu
+│ ◦ *COMMANDS* : ${commands.size}
 ╰┈───────────────╯
 > POWERED BY nyoni-xmd`
             
@@ -356,16 +314,12 @@ async function connectToWA() {
                 conn.sendMessage(from, { react: { text: randomReaction, key: mek.key } }).catch(() => {})
             }
             
-            // ============ PUBLIC MODE - NO RESTRICTIONS ============
-            // KILA MTU ANAWEZA KUTUMIA BOT - HAKUNA KIZUIZI CHA MODE
-            // MODE CHECKING IMEFUTWA KABISA - BOT INAJIBU KILA MTU 100%
-            
-            // Execute command for EVERYONE (no mode checking)
+            // ============ EXECUTE COMMANDS FROM PLUGINS ONLY ============
             if (isCmd) {
                 const cmd = getCommand(command)
                 if (cmd) {
                     try {
-                        console.log(`📝 [PUBLIC] ${command} from ${senderNumber} (${isGroup ? 'GROUP' : 'DM'})`)
+                        console.log(`📝 [PLUGIN] ${command} from ${senderNumber} (${isGroup ? 'GROUP' : 'DM'})`)
                         await cmd.function(conn, mek, { message: mek }, {
                             from, reply, body, isCmd, command, args, q, text,
                             isGroup, sender, senderNumber, botNumber,
@@ -376,9 +330,6 @@ async function connectToWA() {
                         console.error("[COMMAND ERROR]", e)
                         reply(`❌ Error: ${e.message}`)
                     }
-                } else {
-                    // Optional: Reply for unknown commands
-                    // reply(`❌ Unknown command. Type ${prefix}menu for help`)
                 }
             }
         } catch (err) {
@@ -490,4 +441,4 @@ process.on('unhandledRejection', (err) => {
     console.error('Unhandled Rejection:', err)
 })
 
-console.log('✅ XERO-MD STARTED - PUBLIC MODE 100% - EVERYONE CAN USE!')
+console.log('✅ XERO-MD STARTED - WAITING FOR PLUGINS...')
