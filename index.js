@@ -54,7 +54,7 @@ function getCommand(cmdName) {
     return command
 }
 
-// ============ DEFAULT COMMANDS (PUBLIC) ============
+// ============ DEFAULT COMMANDS ============
 registerCommand({
     command: 'menu',
     alias: ['help', 'cmd'],
@@ -129,7 +129,7 @@ registerCommand({
     }
 })
 
-console.log(`✅ Registered ${commands.size} commands`)
+console.log(`✅ Registered ${commands.size} commands - PUBLIC MODE ENABLED`)
 
 // ============ SESSION FOLDER ============
 if (!fs.existsSync(__dirname + '/sessions')) {
@@ -145,7 +145,7 @@ if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
         console.log('========================================')
     } else {
         console.log('📥 Inapakua session...')
-        const sessdata = config.SESSION_ID.replace("jamali~", '').replace("jamali~", '')
+        const sessdata = config.SESSION_ID.replace("XERO-MD>>>", '').replace("jamali~", '')
         const filer = File.fromURL(`https://mega.nz/file/${sessdata}`)
         filer.download((err, data) => {
             if (err) {
@@ -229,7 +229,7 @@ async function connectToWA() {
 │ ◦ *NUMBER 1* : +255763111390
 │ ◦ *NUMBER 2* : +255610209120
 │ ◦ *PREFIX* : ${prefix}
-│ ◦ *MODE* : ${config.MODE}
+│ ◦ *MODE* : PUBLIC ✅
 │ ◦ *TYPE* : ${prefix}menu
 ╰┈───────────────╯
 > POWERED BY nyoni-xmd`
@@ -256,7 +256,7 @@ async function connectToWA() {
     // ============ GROUP EVENTS ============
     conn.ev.on("group-participants.update", (update) => GroupEvents(conn, update))
 
-    // ============ MESSAGES ============
+    // ============ MESSAGES - PUBLIC MODE 100% ============
     conn.ev.on('messages.upsert', async (mek) => {
         try {
             mek = mek.messages[0]
@@ -356,15 +356,16 @@ async function connectToWA() {
                 conn.sendMessage(from, { react: { text: randomReaction, key: mek.key } }).catch(() => {})
             }
             
-            // ============ PUBLIC MODE - KILA MTU ANAWEZA TUMIA ============
-            // HAKUNA MODE CHECKING - BOT ITAJIBU KILA MTU!
+            // ============ PUBLIC MODE - NO RESTRICTIONS ============
+            // KILA MTU ANAWEZA KUTUMIA BOT - HAKUNA KIZUIZI CHA MODE
+            // MODE CHECKING IMEFUTWA KABISA - BOT INAJIBU KILA MTU 100%
             
-            // Execute command for EVERYONE (public mode)
+            // Execute command for EVERYONE (no mode checking)
             if (isCmd) {
                 const cmd = getCommand(command)
                 if (cmd) {
                     try {
-                        console.log(`📝 [PUBLIC] Executing: ${command} from ${senderNumber}`)
+                        console.log(`📝 [PUBLIC] ${command} from ${senderNumber} (${isGroup ? 'GROUP' : 'DM'})`)
                         await cmd.function(conn, mek, { message: mek }, {
                             from, reply, body, isCmd, command, args, q, text,
                             isGroup, sender, senderNumber, botNumber,
@@ -375,6 +376,9 @@ async function connectToWA() {
                         console.error("[COMMAND ERROR]", e)
                         reply(`❌ Error: ${e.message}`)
                     }
+                } else {
+                    // Optional: Reply for unknown commands
+                    // reply(`❌ Unknown command. Type ${prefix}menu for help`)
                 }
             }
         } catch (err) {
@@ -486,4 +490,4 @@ process.on('unhandledRejection', (err) => {
     console.error('Unhandled Rejection:', err)
 })
 
-console.log('✅ XERO-MD STARTED IN PUBLIC MODE - EVERYONE CAN USE!')
+console.log('✅ XERO-MD STARTED - PUBLIC MODE 100% - EVERYONE CAN USE!')
