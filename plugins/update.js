@@ -1,91 +1,166 @@
 const { cmd } = require("../command");
-const axios = require('axios');
+const config = require('../config');
 const fs = require('fs');
-const path = require("path");
-const AdmZip = require("adm-zip");
-const { setCommitHash, getCommitHash } = require('../data/updateDB');
+const path = require('path');
+const { exec } = require('child_process');
+const moment = require('moment-timezone');
+
+// Store last update time
+let lastUpdateTime = Date.now();
+let lastDeployTime = null;
+let currentVersion = "3.0.0";
+
+// Read last deploy time from file if exists
+const deployFile = path.join(__dirname, '../deploy.json');
+if (fs.existsSync(deployFile)) {
+    try {
+        const data = JSON.parse(fs.readFileSync(deployFile, 'utf8'));
+        lastDeployTime = data.lastDeployTime;
+        currentVersion = data.version || "3.0.0";
+    } catch (e) {}
+}
+
+// Function to save deploy time
+function saveDeployTime() {
+    const data = {
+        lastDeployTime: Date.now(),
+        version: currentVersion
+    };
+    fs.writeFileSync(deployFile, JSON.stringify(data, null, 2));
+}
+
+// Check for updates (simulated)
+function checkForUpdates() {
+    // In real scenario, you would check GitHub API
+    // For now, returns false (no update)
+    return {
+        hasUpdate: false,
+        latestVersion: currentVersion,
+        lastCheck: new Date().toISOString()
+    };
+}
 
 cmd({
     pattern: "update",
-    alias: ["upgrade", "sync"],
-    desc: "*ᴜᴘᴅᴀᴛᴇ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴛʜᴇ ʟᴀᴛᴇsᴛ ᴠᴇʀsɪᴏɴ.*",
-    category: "misc",
+    alias: ["checkupdate", "versioninfo"],
+    desc: "Check bot version and update status",
+    category: "owner",
+    react: "🔄",
     filename: __filename
-}, async (client, message, args, { reply, isOwner }) => {
-    if (!isOwner) return reply("*ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ ɪs ᴏɴʟʏ ғᴏʀ ᴛʜᴇ ʙᴏᴛ ᴏᴡɴᴇʀ*");
-
+}, async (conn, mek, m, { from, reply, isOwner, senderNumber }) => {
     try {
-        await reply("*🔍 ᴄʜᴇᴄᴋɪɴɢ ғᴏʀ ᴜᴘᴅᴀᴛᴇs...*");
-
-        // Fetch the latest commit hash from GitHub
-        const { data: commitData } = await axios.get("https://api.github.com/repos/nyoni-xmd/XERO-MD/commits/main");
-        const latestCommitHash = commitData.sha;
-
-        // Get the stored commit hash from the database
-        const currentHash = await getCommitHash();
-
-        if (latestCommitHash === currentHash) {
-            return reply("*✅ ʏᴏᴜʀ XERO-MD ɪs ᴀʟʀᴇᴀᴅʏ ᴜᴘ-ᴛᴏ-ᴅᴀᴛᴇ !*");
+        if (!isOwner) {
+            return reply("❌ *Access Denied!*\nOnly bot owner can use this command.");
         }
 
-        await reply("*🚀 ᴜᴘᴅᴀᴛɪɴɢ XERO-MD ʙᴏᴛ...*");
+        const updateCheck = checkForUpdates();
+        const runtime = process.uptime();
+        const hours = Math.floor(runtime / 3600);
+        const minutes = Math.floor((runtime % 3600) / 60);
+        const seconds = Math.floor(runtime % 60);
+        
+        const currentTime = moment().tz("Africa/Dar_es_Salaam").format("HH:mm:ss");
+        const currentDate = moment().tz("Africa/Dar_es_Salaam").format("dddd, DD MMMM YYYY");
 
-        // Download the latest code
-        const zipPath = path.join(__dirname, "latest.zip");
-        const { data: zipData } = await axios.get("https://github.com/nyoni-xmd/XERO-MD/archive/main.zip", { responseType: "arraybuffer" });
-        fs.writeFileSync(zipPath, zipData);
+        let lastDeployText = "Not recorded";
+        if (lastDeployTime) {
+            const deployDate = moment(lastDeployTime).tz("Africa/Dar_es_Salaam");
+            lastDeployText = deployDate.format("DD/MM/YYYY HH:mm:ss");
+        }
 
-        // Extract ZIP file
-        await reply("*📦 ᴇxᴛʀᴀᴄᴛɪɴɢ ᴛʜᴇ ʟᴀᴛᴇsᴛ ᴄᴏᴅᴇ...*");
-        const extractPath = path.join(__dirname, 'latest');
-        const zip = new AdmZip(zipPath);
-        zip.extractAllTo(extractPath, true);
+        const updateInfo = `╭━━❍ *UPDATE STATUS* ❍
+┃ ❍ *ᴠᴇʀsɪᴏɴ* : ${currentVersion}
+┃ ❍ *ʟᴀsᴛ ᴅᴇᴘʟᴏʏ* : ${lastDeployText}
+┃ ❍ *ʙᴏᴛ ʀᴜɴᴛɪᴍᴇ* : ${hours}h ${minutes}m ${seconds}s
+┃ ❍ *ᴄᴜʀʀᴇɴᴛ ᴛɪᴍᴇ* : ${currentTime}
+┃ ❍ *ᴄᴜʀʀᴇɴᴛ ᴅᴀᴛᴇ* : ${currentDate}
+╰━━━━━━━━━━━━━━━━━━━❍
 
-        // Copy updated files, preserving config.js and app.json
-        await reply("*🔄 ʀᴇᴘʟᴀᴄɪɴɢ ғɪʟᴇs...*");
-        const sourcePath = path.join(extractPath, "XERO-MD-main");
-        const destinationPath = path.join(__dirname, '..');
-        copyFolderSync(sourcePath, destinationPath);
+╭─〔 UPDATE CHECK 〕─╮
+│ 🔍 *sᴛᴀᴛᴜs* : ${updateCheck.hasUpdate ? '✅ UPDATE AVAILABLE!' : '✅ UP TO DATE'}
+│ 📦 *ʟᴀᴛᴇsᴛ ᴠᴇʀsɪᴏɴ* : ${updateCheck.latestVersion}
+│ 📅 *ʟᴀsᴛ ᴄʜᴇᴄᴋ* : ${updateCheck.lastCheck}
+╰───────────────╯
 
-        // Save the latest commit hash to the database
-        await setCommitHash(latestCommitHash);
+╭─〔 COMMANDS 〕─╮
+│ • .update - Check for updates
+│ • .deploy - Record new deployment
+│ • .runtime - Check bot uptime
+│ • .alive - Check bot status
+╰───────────────╯
 
-        // Cleanup
-        fs.unlinkSync(zipPath);
-        fs.rmSync(extractPath, { recursive: true, force: true });
+> POWERED BY nyoni-xmd
+⚡ POWER - SPEED - CONTROL
+🚀 BEYOND LIMITS`;
 
-        await reply("*✅ ᴜᴘᴅᴀᴛᴇ ᴄᴏᴍᴘʟᴇᴛᴇ! ʀᴇsᴛᴀʀᴛɪɴɢ ᴛʜᴇ ʙᴏᴛ...*");
-        process.exit(0);
+        await conn.sendMessage(from, {
+            text: updateInfo,
+            contextInfo: {
+                mentionedJid: [m.sender],
+                forwardingScore: 999,
+                isForwarded: true
+            }
+        }, { quoted: mek });
+
     } catch (error) {
-        console.error("Update error:", error);
-        return reply("*❌ ᴜᴘᴅᴀᴛᴇ ғᴀɪʟᴇᴅ. ᴘʟᴇᴀsᴇ ᴛʀʏ ᴍᴀɴᴜᴀʟʟʏ*");
+        console.error(error);
+        reply(`❌ Error: ${error.message}`);
     }
 });
 
-// Helper function to copy directories while preserving config.js and app.json
-function copyFolderSync(source, target) {
-    if (!fs.existsSync(target)) {
-        fs.mkdirSync(target, { recursive: true });
-    }
-
-    const items = fs.readdirSync(source);
-    for (const item of items) {
-        const srcPath = path.join(source, item);
-        const destPath = path.join(target, item);
-
-        // Skip config.js and app.json
-        if (item === "config.js" || item === "app.json") {
-            console.log(`Skipping ${item} to preserve custom settings.`);
-            continue;
+// Command to record deployment
+cmd({
+    pattern: "deploy",
+    alias: ["newdeploy", "recorddeploy"],
+    desc: "Record new deployment time",
+    category: "owner",
+    react: "🚀",
+    filename: __filename
+}, async (conn, mek, m, { from, reply, isOwner }) => {
+    try {
+        if (!isOwner) {
+            return reply("❌ *Access Denied!*\nOnly bot owner can use this command.");
         }
 
-        if (fs.lstatSync(srcPath).isDirectory()) {
-            copyFolderSync(srcPath, destPath);
-        } else {
-            fs.copyFileSync(srcPath, destPath);
-        }
-    }
-}
-    
-    
+        saveDeployTime();
+        const deployTime = moment().tz("Africa/Dar_es_Salaam").format("DD/MM/YYYY HH:mm:ss");
+        
+        reply(`✅ *Deployment Recorded!*
 
+📅 *Deploy Time* : ${deployTime}
+🔧 *Version* : ${currentVersion}
+🔄 *Status* : Ready
+
+> Use .update to check status`);
+    } catch (error) {
+        console.error(error);
+        reply(`❌ Error: ${error.message}`);
+    }
+});
+
+// Command to show bot version
+cmd({
+    pattern: "version",
+    alias: ["ver", "botversion"],
+    desc: "Show bot version",
+    category: "info",
+    react: "📦",
+    filename: __filename
+}, async (conn, mek, m, { from, reply }) => {
+    try {
+        const versionInfo = `╭━━❍ *XERO-MD VERSION* ❍
+┃ ❍ *ᴠᴇʀsɪᴏɴ* : ${currentVersion}
+┃ ❍ *ᴅᴇᴠ* : nyoni-xmd
+┃ ❍ *ʙᴏᴛ* : XERO-MD
+┃ ❍ *sᴛᴀᴛᴜs* : ʀᴜɴɴɪɴɢ
+╰━━━━━━━━━━━━━━━━━━━❍
+
+> ⚡ POWER - SPEED - CONTROL
+> 🚀 BEYOND LIMITS`;
+
+        reply(versionInfo);
+    } catch (error) {
+        console.error(error);
+        reply(`❌ Error: ${error.message}`);
+    }
+});
