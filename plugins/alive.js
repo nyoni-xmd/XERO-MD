@@ -1,9 +1,8 @@
 const { cmd } = require("../command");
-const moment = require("moment");
+const moment = require("moment-timezone");
 const config = require('../config');
 
-let botStartTime = Date.now(); // Enregistrement de l'heure de démarrage du bot
-const ALIVE_IMG = "https://files.catbox.moe/gyaka2.png"; // Image XERO-MD
+let botStartTime = Date.now();
 
 cmd({
     pattern: "alive",
@@ -22,25 +21,28 @@ cmd({
         const runtimeMinutes = Math.floor((runtimeMilliseconds / (1000 * 60)) % 60);
         const runtimeHours = Math.floor(runtimeMilliseconds / (1000 * 60 * 60));
 
-        const formattedInfo = `╭─ 「 *\`XERO-MD\`* 」
-│✨ *ʙᴏᴛ ɪs ᴀᴄᴛɪᴠᴇ & ᴏɴʟɪɴᴇ!*
-│🧠 *ᴏᴡɴᴇʀ:* NYONI-XMD
-│📞 *ɴᴜᴍʙᴇʀ 1:* +255763111390
-│📞 *ɴᴜᴍʙᴇʀ 2:* +255610209120
-│⚡ *ᴠᴇʀsɪᴏɴ:* 3.0.0
-│🕒 *ᴛɪᴍᴇ* : ${currentTime}
-│📳 *ᴍᴏᴅᴇ:* [${config.MODE}]
-│📅 *ᴅᴀᴛᴇ* : ${currentDate}
-│⏳ *ᴜᴘᴛɪᴍᴇ* : ${runtimeHours}h ${runtimeMinutes}m ${runtimeSeconds}s
-╰────────────────❍
+        const formattedInfo = `╭━━❍ *XERO-MD* ❍
+┃ ❍ *ᴜsᴇʀ* : ${pushname}
+┃ ❍ *ᴛɪᴍᴇ* : ${currentTime}
+┃ ❍ *ᴅᴀᴛᴇ* : ${currentDate}
+┃ ❍ *ᴜᴘᴛɪᴍᴇ* : ${runtimeHours}h ${runtimeMinutes}m ${runtimeSeconds}s
+┃ ❍ *ʀᴜɴᴛɪᴍᴇ* : ${runtimeHours}h ${runtimeMinutes}m ${runtimeSeconds}s
+┃ ❍ *ᴍᴏᴅᴇ* : ${config.MODE}
+┃ ❍ *ᴘʀᴇғɪx* : ${config.PREFIX}
+┃ ❍ *ᴏᴡɴᴇʀ* : nyoni-xmd
+┃ ❍ *ɴᴜᴍʙᴇʀ 1* : +255763111390
+┃ ❍ *ɴᴜᴍʙᴇʀ 2* : +255610209120
+┃ ❍ *ᴠᴇʀsɪᴏɴ* : 3.0.0
+╰━━━━━━━━━━━━━━━━━━━❍
 
-> POWERED BY nyoni-xmd
-⚡ POWER - SPEED - CONTROL
-🚀 BEYOND LIMITS`.trim();
+> *ʙᴏᴛ ɪs ᴀᴄᴛɪᴠᴇ & ᴏɴʟɪɴᴇ!*
+⚡ *ᴘᴏᴡᴇʀ - sᴘᴇᴇᴅ - ᴄᴏɴᴛʀᴏʟ*
+🚀 *ʙᴇʏᴏɴᴅ ʟɪᴍɪᴛs*
+> ᴘᴏᴡᴇʀᴇᴅ ʙʏ ɴʏᴏɴɪ-xᴍᴅ`.trim();
 
         // Send image with caption
         await conn.sendMessage(from, {
-            image: { url: ALIVE_IMG },
+            image: { url: 'https://files.catbox.moe/gyaka2.png' },
             caption: formattedInfo,
             contextInfo: { 
                 mentionedJid: [m.sender],
@@ -53,10 +55,6 @@ cmd({
                 }
             }
         }, { quoted: mek });
-        
-        // Optional: Send audio (if you have valid audio URL)
-        // Audio URL haijajumuishwa kwa sababu inaweza kuwa 404
-        // Ikiwa unayo audio URL mpya, ongeza hapa
 
     } catch (error) {
         console.error("Error in alive command: ", error);
