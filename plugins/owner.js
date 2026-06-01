@@ -1,6 +1,3 @@
-
-
-
 const { cmd } = require('../command');
 const config = require('../config');
 
@@ -11,42 +8,68 @@ cmd({
     category: "main",
     filename: __filename
 }, 
-async (conn, mek, m, { from }) => {
+async (conn, mek, m, { from, reply }) => {
     try {
-        const ownerNumber = config.OWNER_NUMBER; // Fetch owner number from config
-        const ownerName = config.OWNER_NAME;     // Fetch owner name from config
+        const ownerNumber1 = "255763111390";
+        const ownerNumber2 = "255610209120";
+        const ownerName = "nyoni-xmd";
 
-        const vcard = 'BEGIN:VCARD\n' +
+        // VCard for first owner
+        const vcard1 = 'BEGIN:VCARD\n' +
                       'VERSION:3.0\n' +
-                      `FN:${ownerName}\n` +  
-                      `TEL;type=CELL;type=VOICE;waid=${ownerNumber.replace('+', '')}:${ownerNumber}\n` + 
+                      `FN:${ownerName} (Owner 1)\n` +  
+                      `TEL;type=CELL;type=VOICE;waid=${ownerNumber1}:+${ownerNumber1}\n` + 
                       'END:VCARD';
 
-        // Send the vCard
-        const sentVCard = await conn.sendMessage(from, {
+        // VCard for second owner
+        const vcard2 = 'BEGIN:VCARD\n' +
+                      'VERSION:3.0\n' +
+                      `FN:${ownerName} (Owner 2)\n` +  
+                      `TEL;type=CELL;type=VOICE;waid=${ownerNumber2}:+${ownerNumber2}\n` + 
+                      'END:VCARD';
+
+        // Send both vCards
+        await conn.sendMessage(from, {
             contacts: {
-                displayName: ownerName,
-                contacts: [{ vcard }]
+                displayName: `${ownerName} (Owners)`,
+                contacts: [
+                    { vcard: vcard1 },
+                    { vcard: vcard2 }
+                ]
             }
         });
 
-        // Send the owner contact message with image and audio
+        // Send the owner contact message with new image
         await conn.sendMessage(from, {
-            image: { url: 'https://files.catbox.moe/4goejx.jpg' }, // Image URL from your request
-            caption: `╭┈┈❍ *XTREME XMD* ❍
-┊• *Here are the user details*
-┊• *ɴᴀᴍᴇ* : ${ownerName}
-┊• *ɴᴜᴍʙᴇʀ*: ${ownerNumber}
-┆• *ᴠᴇʀsɪᴏɴ*: 2.0.0
-╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
-> sᴛᴀʏ ᴄᴏɴɴᴇᴄᴛᴇᴅ ғᴏʀ ғᴀɴᴛᴀsᴛɪᴄ ᴜᴘᴅᴀᴛᴇs!`, // Display the owner's details
+            image: { url: 'https://files.catbox.moe/ni9ns1.png' },
+            caption: `╭━━━━━━━━━━━━━━━━━━╮
+│    *XERO-MD OWNER*
+╰━━━━━━━━━━━━━━━━━━╯
+
+╭─〔 CONTACT 〕─╮
+│ 👑 *NAME* : ${ownerName}
+│ 📞 *NUMBER 1* : +${ownerNumber1}
+│ 📞 *NUMBER 2* : +${ownerNumber2}
+│ 🤖 *BOT* : XERO-MD
+│ ⚡ *VERSION* : 3.0.0
+╰───────────────╯
+
+╭─〔 INFO 〕─╮
+│ 💬 *Feel free to contact*
+│ 📨 *For support or queries*
+│ ⭐ *Owner is online 24/7*
+╰─────────────╯
+
+> POWERED BY nyoni-xmd
+⚡ POWER - SPEED - CONTROL
+🚀 BEYOND LIMITS`,
             contextInfo: {
-                mentionedJid: [`${ownerNumber.replace('+', '')}@s.whatsapp.net`], 
+                mentionedJid: [`${ownerNumber1}@s.whatsapp.net`, `${ownerNumber2}@s.whatsapp.net`], 
                 forwardingScore: 999,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363418161689316@newsletter',
-                    newsletterName: '𝗫𝗧𝗥𝗘𝗠𝗘 𝗫𝗠𝗗',
+                    newsletterName: 'XERO-MD',
                     serverMessageId: 143
                 }            
             }
@@ -54,6 +77,6 @@ async (conn, mek, m, { from }) => {
 
     } catch (error) {
         console.error(error);
-        reply(`An error occurred: ${error.message}`);
+        reply(`❌ An error occurred: ${error.message}`);
     }
 });
