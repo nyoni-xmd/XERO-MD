@@ -38,7 +38,7 @@ const toSmallCaps = (text) => {
 
 cmd({
   pattern: "menu",
-  alias: ["allmenu", "prince"],
+  alias: ["allmenu", "help", "cmd"],
   use: '.menu',
   desc: "Show all bot commands",
   category: "menu",
@@ -48,7 +48,7 @@ cmd({
 async (conn, mek, m, { from, reply }) => {
   try {
     const totalCommands = commands.length;
-    const date = moment().tz("America/Port-au-Prince").format("dddd, DD MMMM YYYY");
+    const date = moment().tz("Africa/Dar_es_Salaam").format("dddd, DD MMMM YYYY");
 
     const uptime = () => {
       let sec = process.uptime();
@@ -58,14 +58,16 @@ async (conn, mek, m, { from, reply }) => {
       return `${h}h ${m}m ${s}s`;
     };
 
-    let menuText = `*╭━━*『 𝗫𝗧𝗥𝗘𝗠𝗘-𝗫𝗠𝗗』
+    let menuText = `*╭━━*『 XERO-MD 』
 *┃* ❃ *ᴜsᴇʀ* : @${m.sender.split("@")[0]}
 *┃* ❃ *ʀᴜɴᴛɪᴍᴇ* : ${uptime()}
 *┃* ❃ *ᴍᴏᴅᴇ* : ${config.MODE}
 *┃* ❃ *ᴘʀᴇғɪx* : [${config.PREFIX}]
 *┃* ❃ *ᴩʟᴜɢɪɴ* : ${totalCommands}
-*┃* ❃ *ᴅᴇᴠ* : *\`ᴘʀɪɴᴄᴇ xᴛʀᴇᴍᴇ\`*
-*┃* ❃ *ᴠᴇʀsɪᴏɴs* : 2.0.0
+*┃* ❃ *ᴅᴇᴠ* : *nyoni-xmd*
+*┃* ❃ *ɴᴜᴍʙᴇʀ 1* : +255763111390
+*┃* ❃ *ɴᴜᴍʙᴇʀ 2* : +255610209120
+*┃* ❃ *ᴠᴇʀsɪᴏɴ* : 3.0.0
 *╰────────────────❍*
 `;
 
@@ -87,57 +89,35 @@ async (conn, mek, m, { from, reply }) => {
       menuText += `\n*╰──────────────⭑━➤*`;
     }
 
-    const selectedStyle = menuText;
-
-    await conn.sendMessage(from, {
-      image: { url: 'https://files.catbox.moe/mry39g.jpg' },
-      caption: selectedStyle,
-      contextInfo: {
-        mentionedJid: [m.sender],
-        forwardingScore: 999,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363418161689316@newsletter',
-          newsletterName: '𝗫𝗧𝗥𝗘𝗠𝗘-𝗫𝗠𝗗',
-          serverMessageId: 143
+    // Try to send with image
+    try {
+      await conn.sendMessage(from, {
+        image: { url: 'https://files.catbox.moe/gyaka2.png' },
+        caption: menuText,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: '120363418161689316@newsletter',
+            newsletterName: 'XERO-MD',
+            serverMessageId: 143
+          }
         }
-      }
-    }, { quoted: mek });
-    // Function to send menu image with timeout
-        const sendMenuImage = async () => {
-            try {
-                return await conn.sendMessage(
-                    from,
-                    {
-                        image: { url: config.MENU_IMAGE_URL || 'https://files.catbox.moe/r6a3ba.jpg' },
-                        caption: menuCaption,
-                        contextInfo: contextInfo
-                    },
-                    { quoted: mek }
-                );
-            } catch (e) {
-                console.log('Image send failed, falling back to text');
-                return await conn.sendMessage(
-                    from,
-                    { text: menuCaption, contextInfo: contextInfo },
-                    { quoted: mek }
-                );
-            }
-        };
+      }, { quoted: mek });
+    } catch (imgError) {
+      // If image fails, send as text
+      console.log('Image send failed, sending text menu');
+      await conn.sendMessage(from, {
+        text: menuText,
+        contextInfo: {
+          mentionedJid: [m.sender]
+        }
+      }, { quoted: mek });
+    }
 
-        // Function to send menu audio with timeout
-        const sendMenuAudio = async () => {
-            try {
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Small delay after image
-                await conn.sendMessage(from, {
-                    audio: { url: 'https://files.catbox.moe/75xm5n.mp3' },
-                    mimetype: 'audio/mp4',
-                    ptt: true,
-                }, { quoted: mek });
-            } catch (e) {
-                console.log('Audio send failed, continuing without it');
-            }
-        };
+    // Try to send audio (optional - audio URL imekatika 404)
+    // Ikiwa unataka kuondoa audio, hii sehemu imeachwa
 
   } catch (e) {
     console.error(e);
