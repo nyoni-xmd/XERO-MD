@@ -8,6 +8,9 @@ if (!global.commands) {
 if (!global.aliases) {
     global.aliases = new Map();
 }
+if (!global.commandsArray) {
+    global.commandsArray = [];
+}
 
 function registerCommand(cmd) {
     if (cmd.command) {
@@ -17,6 +20,8 @@ function registerCommand(cmd) {
                 global.aliases.set(alias, cmd.command);
             });
         }
+        // Add to array for menu
+        global.commandsArray.push(cmd);
     }
 }
 
@@ -44,12 +49,6 @@ function cmd(options, func) {
     if (registerCommand) {
         registerCommand(commandData);
     }
-    
-    // Also add to commands array for menu
-    if (!global.commandsArray) {
-        global.commandsArray = [];
-    }
-    global.commandsArray.push(commandData);
 }
 
 // Export for other plugins
@@ -58,5 +57,5 @@ module.exports = {
     registerCommand, 
     getCommand,
     commands: global.commands,
-    commandsArray: global.commandsArray || []
+    commandsArray: global.commandsArray
 };
