@@ -2,9 +2,8 @@ const { cmd } = require("../command");
 const moment = require("moment");
 const config = require('../config');
 
-
 let botStartTime = Date.now(); // Enregistrement de l'heure de démarrage du bot
-const ALIVE_IMG = "https://files.catbox.moe/gyaka2.png"; // Image updated to XERO-MD
+const ALIVE_IMG = "https://files.catbox.moe/gyaka2.png"; // Image XERO-MD
 
 cmd({
     pattern: "alive",
@@ -14,9 +13,9 @@ cmd({
     filename: __filename
 }, async (conn, mek, m, { reply, from }) => {
     try {
-        const pushname = m.pushName || "User"; // Nom de l'utilisateur ou valeur par défaut
-        const currentTime = moment().format("HH:mm:ss");
-        const currentDate = moment().format("dddd, MMMM Do YYYY");
+        const pushname = m.pushName || "User";
+        const currentTime = moment().tz("Africa/Dar_es_Salaam").format("HH:mm:ss");
+        const currentDate = moment().tz("Africa/Dar_es_Salaam").format("dddd, MMMM Do YYYY");
 
         const runtimeMilliseconds = Date.now() - botStartTime;
         const runtimeSeconds = Math.floor((runtimeMilliseconds / 1000) % 60);
@@ -25,22 +24,23 @@ cmd({
 
         const formattedInfo = `╭─ 「 *\`XERO-MD\`* 」
 │✨ *ʙᴏᴛ ɪs ᴀᴄᴛɪᴠᴇ & ᴏɴʟɪɴᴇ!*
-│🧠 *ᴏᴡɴᴇʀ:* NYONI XMD
-│⚡ *ᴠᴇʀsɪᴏɴ:* 2.0.0
+│🧠 *ᴏᴡɴᴇʀ:* NYONI-XMD
+│📞 *ɴᴜᴍʙᴇʀ 1:* +255763111390
+│📞 *ɴᴜᴍʙᴇʀ 2:* +255610209120
+│⚡ *ᴠᴇʀsɪᴏɴ:* 3.0.0
 │🕒 *ᴛɪᴍᴇ* : ${currentTime}
 │📳 *ᴍᴏᴅᴇ:* [${config.MODE}]
 │📅 *ᴅᴀᴛᴇ* : ${currentDate}
-│⏳ *ᴜᴘᴛɪᴍᴇ* : ${runtimeHours}h ${runtimeMinutes} m ${runtimeSeconds}s
-╰────────────────❍`.trim();
+│⏳ *ᴜᴘᴛɪᴍᴇ* : ${runtimeHours}h ${runtimeMinutes}m ${runtimeSeconds}s
+╰────────────────❍
 
-        // Vérifier si l'image est définie
-        if (!ALIVE_IMG || !ALIVE_IMG.startsWith("http")) {
-            throw new Error("Invalid ALIVE_IMG URL. Please set a valid image URL.");
-        }
+> POWERED BY nyoni-xmd
+⚡ POWER - SPEED - CONTROL
+🚀 BEYOND LIMITS`.trim();
 
-        // Envoyer le message avec image et légende
+        // Send image with caption
         await conn.sendMessage(from, {
-            image: { url: ALIVE_IMG }, // Assurez-vous que l'URL est valide
+            image: { url: ALIVE_IMG },
             caption: formattedInfo,
             contextInfo: { 
                 mentionedJid: [m.sender],
@@ -54,27 +54,13 @@ cmd({
             }
         }, { quoted: mek });
         
-        // Send the audio file with context info
-        await conn.sendMessage(from, {
-            audio: { url: 'https://files.catbox.moe/oshm4v.mp3' },
-            mimetype: 'audio/mp4',
-            ptt: true,
-            contextInfo: { 
-                mentionedJid: [m.sender],
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363418161689316@newsletter',
-                    newsletterName: 'XERO-MD🎶',
-                    serverMessageId: 143
-                }
-            }
-        }, { quoted: mek });
+        // Optional: Send audio (if you have valid audio URL)
+        // Audio URL haijajumuishwa kwa sababu inaweza kuwa 404
+        // Ikiwa unayo audio URL mpya, ongeza hapa
 
     } catch (error) {
         console.error("Error in alive command: ", error);
         
-        // Répondre avec des détails de l'erreur
         const errorMessage = `
 ❌ An error occurred while processing the alive command.
 🛠 *Error Details*:
