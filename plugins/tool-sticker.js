@@ -40,7 +40,7 @@ cmd(
 
       // Generate sticker metadata
       const sticker = new Sticker(webpBuffer, {
-        pack: config.STICKER_NAME || 'QUEEN LORA',
+        pack: config.STICKER_NAME || 'XERO-MD',
         author: 'Diana official', // Leave blank or customize
         type: StickerTypes.FULL, // FULL for regular stickers
         categories: ['🤩', '🎉'], // Emoji categories
