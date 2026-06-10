@@ -1,4 +1,4 @@
-const { cmd } = require("../DianaTech");
+const { cmd } = require("../command"); 
 const fetch = require("node-fetch");
 
 cmd({
@@ -43,9 +43,9 @@ cmd({
     const fileName = contentDisposition ? contentDisposition.match(/filename=(.*)/)[1] : `${repo}.zip`;
 
     // Notify user of the download
-    reply(`📥 *Downloading repository...*\n\n*Repository:* ${username}/${repo}\n*Filename:* ${fileName}\n\n> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴅɪᴀɴᴀ ᴛᴇᴄʜ*`);
+    reply(`📥 *Downloading repository...*\n\n*Repository:* ${username}/${repo}\n*Filename:* ${fileName}\n\n> *POWERED BY XERO-MD*`);
 
-    // Send the zip file to the user with custom contextInfo
+    // Send the zip file to the user with custom contextInfo (XERO-MD newsletter)
     await conn.sendMessage(from, {
       document: { url: zipUrl },
       fileName: fileName,
@@ -55,8 +55,8 @@ cmd({
         forwardingScore: 999,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363336396621021@newsletter',
-          newsletterName: 'QUEEN LORA CLONE',
+          newsletterJid: '120363399470975987@newsletter', // ✅ Updated to your newsletter
+          newsletterName: 'XERO-MD',
           serverMessageId: 143
         }
       }
