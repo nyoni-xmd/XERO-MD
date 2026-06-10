@@ -1,4 +1,4 @@
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command');
 const config = require("../config");
 
 // Anti-Bad Words System
