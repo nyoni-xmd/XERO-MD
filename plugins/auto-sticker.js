@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const config = require('../config');
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command');
 
 cmd({
   on: "body"
@@ -20,7 +20,7 @@ async (conn, mek, m, { from, body }) => {
 
                     await conn.sendMessage(from, {
                         sticker: stickerBuffer,
-                        packname: '『☘️』Diana ✧˚₊‧ Official『☘️』',
+                        packname: '『☘️』xero ✧˚₊‧ Official『☘️』',
                         author: 'AUTO-STICKER'
                     }, { quoted: mek });
                 } else {
