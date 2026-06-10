@@ -1,51 +1,51 @@
 const fs = require('fs');
-const config = require('../config')
-const { cmd, commands } = require('../DianaTech')
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson} = require('../lib/functions')
+const config = require('../config');
+const { cmd, commands } = require('../command');  // Badala ya DianaTech
+const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('../lib/functions');
 
-
-
-//vcf//
-
+// Plugin ya kuhifadhi vCard za wanachama wa kundi
 cmd({
     pattern: 'savecontact',
-    alias: ["vcf","scontact","savecontacts"],
-    desc: 'gc vcard',
+    alias: ["vcf", "scontact", "savecontacts"],
+    desc: 'Save group participants as vCard',
     category: 'tools',
     filename: __filename
 }, async (conn, mek, m, { from, quoted, body, isCmd, command, args, isGroup, sender, senderNumber, botNumber2, botNumber, pushname, isMe, isOwner, groupMetadata, groupName, participants, groupAdmins, isBotAdmins, isAdmins, reply }) => {
     try {
-        if (!isGroup) return reply("This command is for groups only.");
-        if (!isOwner) return reply("*_This command is for the owner only_*");
+        if (!isGroup) return reply("❌ This command is for groups only.");
+        if (!isOwner) return reply("🔒 *Access Denied!*\nOnly bot owner can use this command.");
 
-        let card = quoted || m; // Handle if quoted message exists
-        let cmiggc = groupMetadata;
-        const { participants } = groupMetadata;
-        
-        let orgiggc = participants.map(a => a.id);
-        let vcard = '';
-        let noPort = 0;
-        
-        for (let a of cmiggc.participants) {
-            vcard += `BEGIN:VCARD\nVERSION:3.0\nFN:[${noPort++}] +${a.id.split("@")[0]}\nTEL;type=CELL;type=VOICE;waid=${a.id.split("@")[0]}:+${a.id.split("@")[0]}\nEND:VCARD\n`;
+        if (!groupMetadata || !groupMetadata.participants) {
+            return reply("❌ Could not fetch group participants.");
         }
 
-        let nmfilect = './QueenLora.vcf';
-        reply('Saving ' + cmiggc.participants.length + ' participants contact');
+        let members = groupMetadata.participants;
+        let vcard = '';
+        let count = 0;
 
-        fs.writeFileSync(nmfilect, vcard.trim());
+        for (let member of members) {
+            let jid = member.id;
+            let number = jid.split('@')[0];
+            vcard += `BEGIN:VCARD\nVERSION:3.0\nFN:${count + 1}. ${number}\nTEL;type=CELL;type=VOICE;waid=${number}:+${number}\nEND:VCARD\n`;
+            count++;
+        }
+
+        let fileName = './XERO-MD_contacts.vcf';
+        reply(`📇 Saving ${members.length} participants...`);
+
+        fs.writeFileSync(fileName, vcard.trim());
         await sleep(2000);
 
         await conn.sendMessage(from, {
-            document: fs.readFileSync(nmfilect), 
-            mimetype: 'text/vcard', 
-            fileName: 'QueenLora.vcf', 
-            caption: `\nDone saving.\nGroup Name: *${cmiggc.subject}*\nContacts: *${cmiggc.participants.length}*\n> ᴘᴏᴡᴇʀᴇᴅ ʙʏ Diana`}, { quoted: mek });
+            document: fs.readFileSync(fileName),
+            mimetype: 'text/vcard',
+            fileName: 'XERO-MD_contacts.vcf',
+            caption: `✅ *Done saving!*\n\n👥 *Group:* ${groupMetadata.subject}\n📞 *Contacts:* ${members.length}\n\n> *XERO-MD*`
+        }, { quoted: mek });
 
-        fs.unlinkSync(nmfilect); // Cleanup the file after sending
+        fs.unlinkSync(fileName);
     } catch (err) {
-        reply(err.toString());
+        console.error(err);
+        reply(`❌ Error: ${err.message}`);
     }
 });
-
-
