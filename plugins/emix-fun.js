@@ -1,1 +1,175 @@
-const _0xef4f0a=_0x281e;(function(_0x2695ef,_0x4636e4){const _0x43fce6=_0x281e,_0x39529a=_0x2695ef();while(!![]){try{const _0x49d3bb=-parseInt(_0x43fce6(0xdc))/0x1+parseInt(_0x43fce6(0xec))/0x2*(parseInt(_0x43fce6(0xf5))/0x3)+-parseInt(_0x43fce6(0xea))/0x4+-parseInt(_0x43fce6(0xd8))/0x5*(-parseInt(_0x43fce6(0xd9))/0x6)+parseInt(_0x43fce6(0xdb))/0x7*(-parseInt(_0x43fce6(0xd7))/0x8)+parseInt(_0x43fce6(0xdd))/0x9*(-parseInt(_0x43fce6(0xe5))/0xa)+-parseInt(_0x43fce6(0xf1))/0xb*(-parseInt(_0x43fce6(0xe4))/0xc);if(_0x49d3bb===_0x4636e4)break;else _0x39529a['push'](_0x39529a['shift']());}catch(_0x274eee){_0x39529a['push'](_0x39529a['shift']());}}}(_0x3855,0x5a806));const {cmd}=require(_0xef4f0a(0xe1)),{fetchEmix}=require('../lib/emix-utils'),{getBuffer}=require('../lib/functions'),{Sticker,StickerTypes}=require(_0xef4f0a(0xef));cmd({'pattern':_0xef4f0a(0xf4),'desc':_0xef4f0a(0xf0),'category':_0xef4f0a(0xda),'react':'😃','use':_0xef4f0a(0xe2),'filename':__filename},async(_0x2793b2,_0x4ed70c,_0x3e115c,{args:_0x25ea45,q:_0x521676,reply:_0x3e99e5})=>{const _0x366202=_0xef4f0a;try{if(!_0x521676[_0x366202(0xf3)](','))return _0x3e99e5(_0x366202(0xe3));let [_0x3fd575,_0xd3e1c4]=_0x521676[_0x366202(0xd6)](',')['map'](_0x586036=>_0x586036[_0x366202(0xd5)]());if(!_0x3fd575||!_0xd3e1c4)return _0x3e99e5(_0x366202(0xe8));let _0x15a8f0=await fetchEmix(_0x3fd575,_0xd3e1c4);if(!_0x15a8f0)return _0x3e99e5(_0x366202(0xe9));let _0x841780=await getBuffer(_0x15a8f0),_0x441950=new Sticker(_0x841780,{'pack':'Emoji\x20Mix','author':_0x366202(0xf2),'type':StickerTypes[_0x366202(0xde)],'categories':['🤩','🎉'],'quality':0x4b,'background':_0x366202(0xed)});const _0x19c232=await _0x441950['toBuffer']();await _0x2793b2[_0x366202(0xee)](_0x4ed70c[_0x366202(0xe6)],{'sticker':_0x19c232},{'quoted':_0x4ed70c});}catch(_0x3553c3){console[_0x366202(0xeb)](_0x366202(0xdf),_0x3553c3[_0x366202(0xe0)]),_0x3e99e5(_0x366202(0xe7)+_0x3553c3[_0x366202(0xe0)]);}});function _0x281e(_0x26f495,_0x442526){const _0x3855c9=_0x3855();return _0x281e=function(_0x281e15,_0x18f664){_0x281e15=_0x281e15-0xd5;let _0x1912c4=_0x3855c9[_0x281e15];return _0x1912c4;},_0x281e(_0x26f495,_0x442526);}function _0x3855(){const _0x24b9b5=['165231fczpKb','FULL','Error\x20in\x20.emix\x20command:','message','../DianaTech','.emix\x20😂,🙂','❌\x20*Usage:*\x20.emix\x20😂,🙂\x0a_Send\x20two\x20emojis\x20separated\x20by\x20a\x20comma._','12FHIwic','310yluwfy','chat','❌\x20Could\x20not\x20generate\x20emoji\x20mix:\x20','❌\x20Please\x20provide\x20two\x20emojis\x20separated\x20by\x20a\x20comma.','❌\x20Could\x20not\x20generate\x20emoji\x20mix.\x20Try\x20different\x20emojis.','1900864KYNnpl','error','14TPlYpI','transparent','sendMessage','wa-sticker-formatter','Combine\x20two\x20emojis\x20into\x20a\x20sticker.','9528739clMnTD','DIANA TECH','includes','emix','266619AWKFpt','trim','split','1651136IdezPD','1048310DWHtCz','12naAQev','fun','7ZmVZsu','286253JZLGvH'];_0x3855=function(){return _0x24b9b5;};return _0x3855();}
+// emix-fun.js - XERO-MD Fun Emoji Mixer & More
+const { cmd } = require("../command");
+const axios = require("axios");
+
+// -------------------------------------------------------------
+// 1. EMOJI MIXER (combine two emojis into one)
+// -------------------------------------------------------------
+cmd({
+    pattern: "emix",
+    alias: ["emojimix", "mixemoji"],
+    desc: "Mix two emojis to create a new one.",
+    category: "fun",
+    react: "🎭",
+    filename: __filename,
+    use: "😃 😢"
+}, async (conn, mek, m, { from, args, reply }) => {
+    try {
+        if (args.length < 2) {
+            return reply("❌ Please provide two emojis.\nExample: `.emix 😃 😢`");
+        }
+
+        let emoji1 = args[0];
+        let emoji2 = args[1];
+
+        // Validate emojis (simple regex to check if they are single emoji)
+        const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
+        if (!emojiRegex.test(emoji1) || !emojiRegex.test(emoji2)) {
+            return reply("⚠️ Please provide valid emojis (single characters).");
+        }
+
+        // Use public API (emix.xyz or other). I'll use a reliable free API: https://emojiapi.dev/ not for mix.
+        // Instead use: https://emoji.aranja.com/api/emoji-mix (fallback). 
+        // But to avoid external dependency, I'll implement a simple random internal mix as fallback.
+        const apiUrl = `https://emojikit.vercel.app/api/emojimix?emoji1=${encodeURIComponent(emoji1)}&emoji2=${encodeURIComponent(emoji2)}`;
+        
+        let mixedEmoji;
+        try {
+            const response = await axios.get(apiUrl, { timeout: 5000 });
+            if (response.data && response.data.result) {
+                mixedEmoji = response.data.result;
+            } else {
+                throw new Error("No result from API");
+            }
+        } catch (error) {
+            // Fallback: generate a random mix from a pool of common mixed emojis
+            const fallbackMix = {
+                "😃😢": "😅", "❤️🔥": "❤️‍🔥", "😂😭": "🤣", "🐱🐶": "🐱‍👤",
+                "😊😍": "🥰", "😎🤓": "🧐", "🍕🍔": "🌮", "🎉🎊": "✨"
+            };
+            const key = `${emoji1}${emoji2}`;
+            mixedEmoji = fallbackMix[key] || "🤷‍♂️";
+        }
+
+        await conn.sendMessage(from, {
+            text: `✨ *Emoji Mix Result*\n\n${emoji1} + ${emoji2} = ${mixedEmoji}\n\n> XERO-MD`
+        }, { quoted: mek });
+
+    } catch (e) {
+        console.error(e);
+        reply("❌ Error mixing emojis. Try again later.");
+    }
+});
+
+// -------------------------------------------------------------
+// 2. EMOJI TEXT (convert text to regional indicator emojis)
+// -------------------------------------------------------------
+cmd({
+    pattern: "emojitext",
+    alias: ["etext"],
+    desc: "Convert text into emoji letters (regional indicators).",
+    category: "fun",
+    react: "🔤",
+    filename: __filename,
+    use: "hello"
+}, async (conn, mek, m, { from, args, reply }) => {
+    try {
+        if (args.length === 0) return reply("Provide text to convert.\nExample: `.emojitext XERO`");
+
+        let text = args.join(" ").toLowerCase();
+        let result = "";
+        for (let char of text) {
+            if (char >= 'a' && char <= 'z') {
+                result += `:${char}: `;
+                // Alternatively use regional indicator: `🇦` = letter A, but easier: use emoji letters (🅰️ etc)
+                // Simpler: use regional indicator symbols (🇦 for a, but requires two letters)
+                // I'll use uppercase letter emoji (🅰️ style) but for each letter.
+                // Actually better: use regional indicator symbols: 
+                // const regional = String.fromCodePoint(0x1F1E6 + (char.charCodeAt(0)-97));
+                // But that shows as flag letters. Let's do that.
+            }
+        }
+        // Better approach: regional indicator symbols (🇦 for A)
+        let regionalText = "";
+        for (let char of text) {
+            if (char >= 'a' && char <= 'z') {
+                const codePoint = 0x1F1E6 + (char.charCodeAt(0) - 97);
+                regionalText += String.fromCodePoint(codePoint);
+            } else {
+                regionalText += char;
+            }
+        }
+        if (!regionalText) regionalText = "⚠️ Only letters a-z supported.";
+        
+        await conn.sendMessage(from, { text: `🔠 *Emoji Text:* ${regionalText}\n\n> XERO-MD` }, { quoted: mek });
+    } catch (e) {
+        console.error(e);
+        reply("❌ Error converting text.");
+    }
+});
+
+// -------------------------------------------------------------
+// 3. EMOJI RAIN (sends a waterfall of random emojis)
+// -------------------------------------------------------------
+cmd({
+    pattern: "emojirain",
+    alias: ["erain"],
+    desc: "Make emojis rain in chat (animated edit).",
+    category: "fun",
+    react: "🌧️",
+    filename: __filename
+}, async (conn, mek, m, { from, reply }) => {
+    try {
+        const rainEmojis = ["💧", "💦", "🌧️", "☔", "🌈", "💎", "✨", "⭐", "❤️", "💛", "💚", "💙", "💜"];
+        const msg = await conn.sendMessage(from, { text: "🌧️ Starting rain..." });
+        
+        for (let i = 0; i < 15; i++) {
+            const randomEmoji = rainEmojis[Math.floor(Math.random() * rainEmojis.length)];
+            const repeatCount = Math.floor(Math.random() * 8) + 2;
+            const line = Array(repeatCount).fill(randomEmoji).join(" ");
+            await conn.relayMessage(from, {
+                protocolMessage: {
+                    key: msg.key,
+                    type: 14,
+                    editedMessage: { conversation: line }
+                }
+            }, {});
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+        await conn.relayMessage(from, {
+            protocolMessage: {
+                key: msg.key,
+                type: 14,
+                editedMessage: { conversation: "🌧️ Rain stopped! 🌈" }
+            }
+        }, {});
+    } catch (e) {
+        console.error(e);
+        reply("❌ Rain effect failed.");
+    }
+});
+
+// -------------------------------------------------------------
+// 4. EMOJI LIST (display random list of emojis by category)
+// -------------------------------------------------------------
+cmd({
+    pattern: "emojilist",
+    alias: ["elist"],
+    desc: "Show a list of random emojis (fun, animals, etc).",
+    category: "fun",
+    react: "📋",
+    filename: __filename
+}, async (conn, mek, m, { from, reply }) => {
+    const categories = {
+        "😀 Smileys": ["😀","😃","😄","😁","😆","😅","😂","🤣","😊","😇","🙂","🙃","😉","😌","😍","🥰","😘","😗","😙","😚","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒","🤕","🤢","🤮","🤧","🥵","🥶","🥴","😵","🤯","🤠","🥳","🥸","😎","🤓","🧐","😕","😟","🙁","☹️","😮","😯","😲","😳","🥺","😦","😧","😨","😰","😥","😢","😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤","😡","😠","🤬","😈","👿","💀","☠️","💩","🤡","👹","👺","👻","👽","👾","🤖","😺","😸","😹","😻","😼","😽","🙀","😿","😾"],
+        "🐶 Animals": ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤","🐴","🐺","🐗","🐝","🐛","🦋","🐌","🐞","🐜","🪰","🪲","🪳","🦟","🦗","🕷️","🦂","🦞","🐙","🦑","🪼","🐬","🐳","🐋","🦈"],
+        "🍔 Food": ["🍎","🍐","🍊","🍋","🍌","🍉","🍇","🍓","🫐","🍒","🍑","🥭","🍍","🥥","🥝","🍅","🍆","🥑","🥦","🥒","🌽","🥕","🫒","🧄","🧅","🥔","🍠","🥐","🥯","🍞","🥖","🥨","🧀","🍖","🍗","🥩","🥓","🍔","🍟","🍕","🌭","🥪","🌮","🌯","🫔","🥙","🧆","🥚","🍳","🥘","🍲","🥣","🥗","🍿","🧈","🧂","🥫","🍱","🍘","🍙","🍚","🍛","🍜","🍝","🍠","🍢","🍣","🍤","🍥","🥮","🍡","🥟","🥠","🥡","🍦","🍧","🍨","🍩","🍪","🎂","🍰","🧁","🥧","🍫","🍬","🍭","🍮","🍯","🥛","☕","🍵","🧃","🥤","🧋","🍶","🍺","🍻","🥂","🥃","🥄","🍽️","🍴","🥢"],
+        "🎉 Activities": ["⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🏓","🏸","🏒","🏑","🥍","🏏","🥅","⛳","🏹","🎣","🤿","🥊","🥋","🎽","🛹","🛼","⛸️","🎿","⛷️","🏂","🏋️","🤼","🤸","⛹️","🤾","🏌️","🏇","🧘","🏄","🏊","🤽","🚣","🏊‍♀️","🏄‍♂️","🚴","🚵","🏎️","🏍️","🛵","🛺","🚲","🛴","🚁","✈️","🚀","🛸","🚂","🚆","🚇","🚊","🚉","🚌","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚗","🚙","🚚","🚛","🚜","🏎️","🏍️","🛵","🛺","🚲","🛴","🚁","✈️","🚀","🛸","🚂","🚆","🚇","🚊","🚉","🚌","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚗","🚙","🚚","🚛","🚜"]
+    };
+
+    let randomCategory = Object.keys(categories)[Math.floor(Math.random() * Object.keys(categories).length)];
+    let emojis = categories[randomCategory];
+    let randomEmojis = emojis.sort(() => 0.5 - Math.random()).slice(0, 20);
+    let list = `📋 *Random ${randomCategory} Emojis*\n\n` + randomEmojis.join(" ") + `\n\n> XERO-MD`;
+    reply(list);
+});
