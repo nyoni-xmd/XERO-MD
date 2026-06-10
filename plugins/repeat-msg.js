@@ -1,5 +1,5 @@
 const { sleep } = require('../lib/functions');
-const { cmd } = require("../DianaTech");
+const { cmd } = require("../command");  
 
 cmd({
   pattern: "repeat",
