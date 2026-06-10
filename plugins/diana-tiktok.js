@@ -1,8 +1,8 @@
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command');  // ← Imebadilishwa kutoka DianaTech → command
 const axios = require('axios');
 const config = require('../config');
 
-// VERIFIED MESSAGE
+// VERIFIED MESSAGE (XERO-MD)
 const fakeVerified = {
   key: {
     fromMe: false,
@@ -11,13 +11,13 @@ const fakeVerified = {
   },
   message: {
     contactMessage: {
-      displayName: "☘️ QUEEN DIANA TECH ☘️",
+      displayName: "⚡ XERO-MD ⚡",
       vcard: `BEGIN:VCARD
 VERSION:3.0
-FN:${config.BOT_NAME}
-ORG:DIANA TECH VERIFIED;
+FN:${config.BOT_NAME || "XERO-MD"}
+ORG:XERO-MD VERIFIED;
 TITLE:Official WhatsApp Bot
-TEL;type=CELL;waid=${config.OWNER_NUMBER}:${config.OWNER_NUMBER}
+TEL;type=CELL;waid=${config.OWNER_NUMBER || "255763111390"}:${config.OWNER_NUMBER || "255763111390"}
 END:VCARD`
     }
   }
@@ -59,7 +59,7 @@ Don't make me ask twice 😏`
         const meta = data.metadata || {};
 
         let caption = 
-`╭━━━〔 *${config.BOT_NAME}* 〕━━━⬣
+`╭━━━〔 *${config.BOT_NAME || "XERO-MD"}* 〕━━━⬣
 ┃
 ┃ 🎬 *TIKTOK DOWNLOADED SUCCESSFULLY*
 ┃
@@ -72,7 +72,7 @@ Don't make me ask twice 😏`
 🔗 *Source:* ${url}
 
 ✨ *Enjoy your video... stay smooth.*  
-> ☘️ *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴅɪᴀɴᴀ ᴛᴇᴄʜ*`;
+> ⚡ *© ᴘᴏᴡᴇʀᴇᴅ ʙʏ NYONI XMD*`;
 
         await conn.sendMessage(from, {
             video: { url: data.result },
