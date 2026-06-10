@@ -1,10 +1,10 @@
-const { cmd } = require("../DianaTech");
+const { cmd } = require("../command");  // Badala ya DianaTech
 
 cmd({
   pattern: "channelid",
-  alias: ["newsletter", "id", "cid"],
+  alias: ["newsletter", "id", "cid", "cinfo"],
   react: "⏳",
-  desc: "Get WhatsApp Channel info from link",
+  desc: "Get WhatsApp Channel/Newsletter info from link",
   category: "whatsapp",
   filename: __filename
 }, async (conn, mek, m, {
@@ -30,11 +30,14 @@ cmd({
 
     if (!metadata || !metadata.id) return reply("❌ Channel not found or inaccessible.");
 
-    const infoText = `\`📡 Channel Info\`\n\n` +
-      `🛠️ *ID:* ${metadata.id}\n` +
-      `📌 *Name:* ${metadata.name}\n` +
-      `👥 *Followers:* ${metadata.subscribers?.toLocaleString() || "N/A"}\n` +
-      `📅 *Created on:* ${metadata.creation_time ? new Date(metadata.creation_time * 1000).toLocaleString("id-ID") : "Unknown"}`;
+    const infoText = `╭━━〔 📡 *CHANNEL INFO* 〕━━⬣
+┃ 🆔 *ID:* ${metadata.id}
+┃ 📛 *Name:* ${metadata.name}
+┃ 👥 *Followers:* ${metadata.subscribers?.toLocaleString() || "N/A"}
+┃ 📅 *Created:* ${metadata.creation_time ? new Date(metadata.creation_time * 1000).toLocaleString() : "Unknown"}
+╰━━━━━━━━━━━━━━━━⬣
+
+> *XERO-MD*`;
 
     if (metadata.preview) {
       await conn.sendMessage(from, {
@@ -46,7 +49,7 @@ cmd({
     }
 
   } catch (error) {
-    console.error("❌ Error in .cinfo plugin:", error);
+    console.error("❌ Error in channelid plugin:", error);
     reply("⚠️ An unexpected error occurred.");
   }
 });
