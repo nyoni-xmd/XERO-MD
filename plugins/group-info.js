@@ -1,5 +1,5 @@
 const config = require('../config')
-const { cmd } = require('../DianaTech')
+const { cmd } = require('../command')
 const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep } = require('../lib/functions')
 
 cmd({
