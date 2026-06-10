@@ -8,7 +8,7 @@
     "npm": ">=10.x"
   },
   "scripts": {
-    "start": "pm2 start index.js --deep-monitoring --attach --name QUEEN-LORA",
+    "start": "pm2 start index.js --deep-monitoring --attach --name XERO-MD",
     "stop": "pm2 stop XERO-MD",
     "restart": "pm2 restart XERO-MD"
   },
