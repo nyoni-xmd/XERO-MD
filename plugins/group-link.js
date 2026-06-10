@@ -1,8 +1,8 @@
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command'); // ✅ Badala ya DianaTech
 const config = require('../config');
 const prefix = config.PREFIX;
 const fs = require('fs');
-const { getBuffer } = require('../lib/functions2'); // Assure-toi que cette fonction récupère bien les buffers via axios
+const { getBuffer } = require('../lib/functions2');
 const path = require('path');
 
 cmd({
@@ -42,15 +42,16 @@ cmd({
 ┃♣︎ᴏᴡɴᴇʀ: ${groupOwner}
 ┃♣︎ɢʀᴏᴜᴘ ɪᴅ: ${groupId}
 ┃♣︎ʟɪɴᴋ ɢʀᴏᴜᴘ: ${inviteLink}
-┃♣︎ᴍᴇɴᴍʙᴇʀs: #${memberCount}
+┃♣︎ᴍᴇᴍʙᴇʀs: #${memberCount}
 ╰╼━━━━━━━━━━━━━━━━╾╯
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴅɪᴀɴᴀ ᴛᴇᴄʜ*`;
+> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ XERO-MD*`; // ✅ Updated
 
         let ppUrl;
         try {
             ppUrl = await conn.profilePictureUrl(from, 'image');
         } catch {
-            ppUrl = 'https://telegra.ph/file/6880771a42bad09dd6087.jpg'; // Fallback photo
+            // Use XERO-MD default image if group has no profile picture
+            ppUrl = config.MENU_IMAGE_URL || 'https://files.catbox.moe/gyaka2.png';
         }
 
         const buffer = await getBuffer(ppUrl);
