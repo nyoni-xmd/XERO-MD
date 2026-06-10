@@ -1,5 +1,5 @@
 const config = require('../config');
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command'); 
 const axios = require('axios');
 const cheerio = require('cheerio');
 
