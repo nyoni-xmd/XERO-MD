@@ -1,4 +1,4 @@
-const { cmd, commands } = require('../command'); // ✅ Badala ya DianaTech
+const { cmd, commands } = require('../command'); //
 const config = require('../config');
 const prefix = config.PREFIX;
 const fs = require('fs');
