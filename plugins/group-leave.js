@@ -1,6 +1,6 @@
 const { sleep } = require('../lib/functions');
 const config = require('../config');
-const { cmd, commands } = require('../DianaTech');
+const { cmd, commands } = require('../command');
 
 cmd({
     pattern: "left",
