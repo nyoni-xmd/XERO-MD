@@ -1,4 +1,4 @@
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command');  // ← Imebadilishwa kutoka DianaTech → command
 const config = require('../config');
 const fetch = require('node-fetch');
 
@@ -132,7 +132,7 @@ ${list}
 
 + 50 Languages Supported
 ╰━━━━━━━━━━━━━━⬣
-> ${config.DESCRIPTION}`
+> ${config.BOT_NAME || "XERO-MD"}`
                 );
             }
 
@@ -212,7 +212,7 @@ ${list}
 ┃ ✅ Result:
 ┃ ${translated}
 ╰━━━━━━━━━━━━━━⬣
-> ${config.DESCRIPTION}`
+> ${config.BOT_NAME || "XERO-MD"}`
             },
             { quoted: mek }
         );
