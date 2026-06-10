@@ -1,6 +1,6 @@
-const config = require('../config')
-const { cmd, commands } = require('../DianaTech')
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson} = require('../lib/functions')
+const config = require('../config');
+const { cmd, commands } = require('../command'); // ✅ Badala ya DianaTech
+const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('../lib/functions');
 
 cmd({
     pattern: "unlockgc",
@@ -9,8 +9,7 @@ cmd({
     desc: "Unlock the group (Allows new members to join).",
     category: "group",
     filename: __filename
-},           
-async (conn, mek, m, { from, isGroup, isAdmins, isBotAdmins, reply }) => {
+}, async (conn, mek, m, { from, isGroup, isAdmins, isBotAdmins, reply }) => {
     try {
         if (!isGroup) return reply("❌ This command can only be used in groups.");
         if (!isAdmins) return reply("❌ Only group admins can use this command.");
