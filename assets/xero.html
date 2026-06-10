@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XERO-MD • KALI STATUS 🔥</title>
+  <!-- Google Fonts: summer style + bold -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Fredoka+One&display=swap" rel="stylesheet">
+  <!-- Favicon (optional – unaweza kubadilisha) -->
+  <link rel="icon" type="image/png" href="https://files.catbox.moe/gyaka2.png">
+  <style>
+    /* Body: sunset kali gradient */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff4d4d, #ff9a44, #ffd24d);
+      background-size: 200% 200%;
+      animation: fireBg 6s ease infinite;
+      overflow: hidden;
+      position: relative;
+      color: #fff;
+    }
+    @keyframes fireBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Palm tree & sun – kali vibe */
+    .palm-tree {
+      position: absolute;
+      bottom: 0;
+      right: 10%;
+      font-size: 120px;
+      z-index: 1;
+      opacity: 0.4;
+      filter: drop-shadow(0 0 5px #ff6600);
+    }
+    .sun {
+      position: absolute;
+      top: 12%;
+      right: 12%;
+      width: 130px;
+      height: 130px;
+      background: radial-gradient(circle, #ffdd77, #ffaa33);
+      border-radius: 50%;
+      box-shadow: 0 0 60px #ffaa33, 0 0 20px #ff6600;
+      z-index: 1;
+      animation: pulseSun 3s infinite;
+    }
+    @keyframes pulseSun {
+      0% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.9; }
+    }
+
+    /* Header slide down – kali red */
+    header {
+      position: absolute;
+      top: -100px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      background: rgba(220, 40, 0, 0.85);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 8px 20px rgba(220, 40, 0, 0.6);
+      z-index: 3;
+      animation: slideDown 1.2s ease-out forwards;
+      border-bottom: 2px solid #ffcc44;
+    }
+    @keyframes slideDown {
+      from { top: -100px; }
+      to { top: 0; }
+    }
+    header h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 40px;
+      letter-spacing: 2px;
+      background: linear-gradient(45deg, #fff, #ffdd99);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: none;
+      margin: 0;
+    }
+
+    /* Main container – glassmorphism kali */
+    .container {
+      text-align: center;
+      padding: 35px 25px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      border-radius: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255,255,255,0.2);
+      width: 85%;
+      max-width: 650px;
+      z-index: 2;
+      animation: fadeInScale 1.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      transition: transform 0.3s;
+      border: 1px solid rgba(255,200,100,0.5);
+    }
+    .container:hover {
+      transform: scale(1.02) translateY(-5px);
+      box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+    }
+    @keyframes fadeInScale {
+      0% { opacity: 0; transform: scale(0.7); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Title pulsing – XERO-MD */
+    .title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 58px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #fff, #ffcc66, #ff884d);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: neonPulse 1.8s infinite;
+    }
+    @keyframes neonPulse {
+      0% { filter: drop-shadow(0 0 2px #ffaa44); }
+      50% { filter: drop-shadow(0 0 20px #ff6644); }
+      100% { filter: drop-shadow(0 0 2px #ffaa44); }
+    }
+
+    /* Marquee – running text */
+    .marquee {
+      margin-top: 25px;
+      overflow: hidden;
+      white-space: nowrap;
+      background: rgba(0,0,0,0.2);
+      padding: 8px 0;
+      border-radius: 50px;
+    }
+    .marquee span {
+      display: inline-block;
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff4e0;
+      text-shadow: 0 0 3px #ff6600;
+      animation: scrollText 18s linear infinite;
+      padding-left: 20px;
+    }
+    @keyframes scrollText {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* 🔥 KALI BUTTON */
+    .action-btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 14px 40px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      border-radius: 60px;
+      background: linear-gradient(95deg, #ff4d2e, #ff8c42);
+      transition: all 0.25s ease;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.3);
+      letter-spacing: 1px;
+    }
+    .action-btn:hover {
+      transform: translateY(-4px) scale(1.02);
+      background: linear-gradient(95deg, #ff6622, #ffaa44);
+      box-shadow: 0 15px 25px rgba(255,70,0,0.4);
+      cursor: pointer;
+    }
+    .action-btn:active {
+      transform: translateY(2px);
+    }
+
+    /* Footer */
+    footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      padding: 12px 0;
+      background: rgba(200, 40, 0, 0.85);
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: #ffe6cc;
+      backdrop-filter: blur(4px);
+      z-index: 3;
+    }
+    footer a {
+      color: #ffdd99;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    footer a:hover {
+      color: #fff;
+      text-shadow: 0 0 5px #ffaa44;
+    }
+
+    /* Wave animation – more aggressive */
+    .wave {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 110px;
+      background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".3" fill="%23ff9944"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="%23ff7722"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%23ff5511"/></svg>');
+      background-size: cover;
+      animation: waveMove 9s linear infinite;
+      z-index: 1;
+      opacity: 0.8;
+    }
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-30%); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Summer kali decorations -->
+  <div class="sun"></div>
+  <div class="palm-tree">🌵🌴</div>
+  <div class="wave"></div>
+
+  <!-- Header: XERO-MD brand -->
+  <header>
+    <h1>⚡ XERO-MD | KALI MODE 🔥</h1>
+  </header>
+
+  <!-- Main Card -->
+  <div class="container">
+    <div class="title">XERO-MD ONLINE</div>
+    <div class="marquee">
+      <span>
+        🚀 XERO-MD • THE KALI BOT • FAST & RELIABLE ☀️ | ALWAYS READY TO SERVE 🛡️ | POWERED BY NYONI XMD 🔥
+      </span>
+    </div>
+    <a href="https://github.com/nyoni-xmd/XERO-MD" class="action-btn" target="_blank">
+      <span id="version"></span>
+    </a>
+  </div>
+
+  <!-- Footer with correct credit -->
+  <footer>
+    <p>🔥 Developed by <a href="https://github.com/nyoni-xmd" target="_blank">NYONI XMD</a> | XERO-MD PROJECT © 2026 | ⚡ KALI VIBE ⚡</p>
+  </footer>
+
+  <script>
+    // Fetch real version from XERO-MD package.json (GitHub raw)
+    fetch('https://raw.githubusercontent.com/nyoni-xmd/XERO-MD/main/package.json')
+      .then(response => response.json())
+      .then(data => {
+        const version = data.version || '2.0.0';
+        document.getElementById('version').textContent = `📦 VERSION ${version} • DEPLOY NOW`;
+      })
+      .catch(() => {
+        document.getElementById('version').textContent = '⚡ KALI EDITION 2.0 ⚡';
+      });
+  </script>
+</body>
+</html>
