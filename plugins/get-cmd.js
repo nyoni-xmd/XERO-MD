@@ -1,6 +1,10 @@
-const { cmd, commands } = require('../DianaTech');
+const { cmd, commands } = require('../command');  // ✅ XERO‑MD command system
 const fs = require('fs');
 const path = require('path');
+const config = require('../config');
+
+// Owner numbers – you can use isCreator, but we'll also keep JID check
+const ownerNumbers = ['255763111390', '255610209120'];
 
 cmd({
     pattern: "get",
@@ -10,59 +14,59 @@ cmd({
     react: "📜",
     filename: __filename
 },
-async (conn, mek, m, { from, args, reply, sender }) => {
+async (conn, mek, m, { from, args, reply, sender, isCreator }) => {
     try {
-        // Strict JID restriction
-        const allowedJid = "18492823944@s.whatsapp.net";
-        if (sender !== allowedJid) {
-            return reply("❌ Access Denied! This command is restricted.");
+        // Restrict to bot owner(s)
+        const senderNumber = sender.split('@')[0];
+        if (!ownerNumbers.includes(senderNumber) && !isCreator) {
+            return reply("❌ Access Denied! This command is for the bot owner only.");
         }
 
-        if (!args[0]) return reply("❌ Please provide a command name. Example: `.get alive`");
+        if (!args[0]) return reply("❌ Please provide a command name. Example: `.get menu`");
 
         const commandName = args[0].toLowerCase();
-        const commandData = commands.find(cmd => cmd.pattern === commandName || (cmd.alias && cmd.alias.includes(commandName)));
+        
+        // commands is an array from command.js (global.commandsArray)
+        const commandData = commands.find(cmd => 
+            cmd.command === commandName || 
+            (cmd.alias && cmd.alias.includes(commandName))
+        );
 
         if (!commandData) return reply("❌ Command not found!");
 
-        // Get the command file path
         const commandPath = commandData.filename;
-
-        // Read the full source code
         const fullCode = fs.readFileSync(commandPath, 'utf-8');
 
-        // Truncate long messages for WhatsApp
+        // WhatsApp caption limit ~ 4096 characters
         let truncatedCode = fullCode;
-        if (truncatedCode.length > 4000) {
-            truncatedCode = fullCode.substring(0, 4000) + "\n\n// Code too long, sending full file 📂";
+        if (truncatedCode.length > 3900) {
+            truncatedCode = fullCode.substring(0, 3900) + "\n\n// Code too long, full file attached 📂";
         }
 
-        // Formatted caption with truncated code
         const formattedCode = `⬤───〔 *📜 Command Source* 〕───⬤
 \`\`\`js
 ${truncatedCode}
 \`\`\`
 ╰──────────⊷  
-⚡ Full file sent below 📂  
-Cʀᴇᴀᴛᴇᴅ ʙʏ ᴅɪᴀɴᴀ ᴛᴇᴄʜ`;
+⚡ *XERO-MD* | Full file sent below`;
 
-        // Send image with truncated source code
+        // Send image preview (XERO‑MD image)
         await conn.sendMessage(from, { 
-            image: { url: `https://files.catbox.moe/3lzhi9.jpg` },
+            image: { url: config.MENU_IMAGE_URL || "https://files.catbox.moe/gyaka2.png" },
             caption: formattedCode,
             contextInfo: {
                 mentionedJid: [m.sender],
                 forwardingScore: 999,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363336396621021@newsletter',
-                    newsletterName: 'QUEEN LORA GET',
-                    serverMessageId: 143
+                    newsletterJid: "120363399470975987@newsletter",
+                    newsletterName: "XERO-MD",
+                    serverMessageId: Math.floor(Math.random() * 1000)
                 }
             }
         }, { quoted: mek });
 
-        // Send full source file
+        // Send the full .js file as a document
         const fileName = `${commandName}.js`;
         const tempPath = path.join(__dirname, fileName);
         fs.writeFileSync(tempPath, fullCode);
@@ -73,7 +77,6 @@ Cʀᴇᴀᴛᴇᴅ ʙʏ ᴅɪᴀɴᴀ ᴛᴇᴄʜ`;
             fileName: fileName
         }, { quoted: mek });
 
-        // Delete the temporary file
         fs.unlinkSync(tempPath);
 
     } catch (e) {
