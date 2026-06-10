@@ -1,8 +1,8 @@
 const config = require('../config');
 const { sleep } = require('../lib/functions');
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command');  // Badala ya DianaTech
 
-// ✅ Fake Verified Contact
+// ✅ Fake Verified Contact (XERO-MD)
 const fakeVerified = {
   key: {
     fromMe: false,
@@ -11,13 +11,14 @@ const fakeVerified = {
   },
   message: {
     contactMessage: {
-      displayName: "🧮 QUEEN DIANA TECH 🧮",
+      displayName: "⚡ XERO-MD CALCULATOR ⚡",
       vcard: `BEGIN:VCARD
 VERSION:3.0
-FN:QUEEN LORA BOT
-ORG:DIANA TECH VERIFIED;
+FN:XERO-MD BOT
+ORG:XERO-MD VERIFIED
 TITLE:Official WhatsApp Bot
-TEL;type=CELL;waid=18492823944:+18492823944
+TEL;type=CELL;waid=255763111390:+255763111390
+TEL;type=CELL;waid=255610209120:+255610209120
 END:VCARD`
     }
   }
@@ -33,10 +34,9 @@ cmd({
 },
 async (conn, mek, m, { args, reply }) => {
     try {
-
         if (!args[0]) {
             return reply(
-`╭━━〔 🧮 CALCULATOR 〕━━⬣
+`╭━━〔 🧮 XERO-MD CALCULATOR 〕━━⬣
 ┃ ✳️ Example:
 ┃ ➤ .calc 5 + 3 * 2
 ╰━━━━━━━━━━━━━━━⬣`
@@ -66,7 +66,7 @@ async (conn, mek, m, { args, reply }) => {
         }
 
         const message = 
-`╭━━〔 🧮 DIANA TECH CALC 〕━━⬣
+`╭━━〔 🧮 XERO-MD CALC 〕━━⬣
 ┃ 📥 Expression:
 ┃ ➤ *${expression}=* ⤵️
 ┃
@@ -74,7 +74,7 @@ async (conn, mek, m, { args, reply }) => {
 ┃ ➤ ${result}
 ┃
 ┃ ─────────────────
-┃ ⚡ ${config.DESCRIPTION}
+┃ ⚡ ${config.DESCRIPTION || '*© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ɴʏᴏɴɪ-xᴍᴅ*'}
 ╰━━━━━━━━━━━━━━━⬣`;
 
         await sleep(300);
@@ -82,7 +82,7 @@ async (conn, mek, m, { args, reply }) => {
         await conn.sendMessage(
             m.chat,
             {
-                image: { url: "https://res.cloudinary.com/dqxlb29uz/image/upload/v1778464116/bwm_uploads/media-1778464116415.jpg" },
+                image: { url: "https://files.catbox.moe/gyaka2.png" }, // Badala ya cloudinary URL
                 caption: message
             },
             { quoted: fakeVerified }
@@ -130,7 +130,7 @@ async (conn, mek, m, { reply }) => {
         });
 
         const message = `
-╭━━〔 📅 DIANA TECH DATE 〕━━⬣
+╭━━〔 📅 XERO-MD DATE & TIME 〕━━⬣
 ┃ 📆 Full Date:
 ┃ ➤ ${formattedDate}
 ┃
@@ -138,13 +138,13 @@ async (conn, mek, m, { reply }) => {
 ┃ ➤ ${currentTime}
 ┃
 ┃ ─────────────────
-┃ ⚡ ${config.DESCRIPTION}
+┃ ⚡ ${config.DESCRIPTION || '*© ᴘᴏᴡᴇʀᴇᴅ ʙʏ ɴʏᴏɴɪ-xᴍᴅ*'}
 ╰━━━━━━━━━━━━━━━⬣`;
 
         await conn.sendMessage(
             m.chat,
             {
-                image: { url: config.MENU_IMAGE_URL },
+                image: { url: config.MENU_IMAGE_URL || "https://files.catbox.moe/gyaka2.png" },
                 caption: message
             },
             { quoted: mek }
