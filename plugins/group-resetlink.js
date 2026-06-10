@@ -1,6 +1,6 @@
-const config = require('../config')
-const { cmd } = require('../DianaTech')
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('../lib/functions')
+const config = require('../config');
+const { cmd } = require('../command'); 
+const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('../lib/functions');
 
 cmd({
     pattern: "revoke",
