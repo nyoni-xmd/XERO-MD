@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { cmd } = require("../DianaTech");
+const { cmd } = require("../command");  
 
 cmd({
   pattern: "npm",
@@ -12,7 +12,7 @@ cmd({
   try {
     // Check if a package name is provided
     if (!args.length) {
-      return reply("Please provide the name of the npm package you want to search for. Example: .npm express");
+      return reply("📦 Please provide the name of the npm package you want to search for.\nExample: .npm express");
     }
 
     const packageName = args.join(" ");
@@ -31,17 +31,19 @@ cmd({
     const license = packageData.license || "Unknown";
     const repository = packageData.repository ? packageData.repository.url : "Not available";
 
-    // Create the response message
+    // Create the response message (XERO-MD style)
     const message = `
-*QUEEN LORA NPM SEARCH*
+╭━━〔 📦 *XERO-MD NPM SEARCH* 〕━━⬣
+┃ 📛 *Package:* ${packageName}
+┃ 📄 *Description:* ${description}
+┃ 🔖 *Latest Version:* ${latestVersion}
+┃ 📜 *License:* ${license}
+┃ 🗂️ *Repository:* ${repository}
+┃ 🔗 *URL:* ${npmUrl}
+╰━━━━━━━━━━━━━━━━⬣
 
-*🔰 NPM PACKAGE:* ${packageName}
-*📄 DESCRIPTION:* ${description}
-*⏸️ LAST VERSION:* ${latestVersion}
-*🪪 LICENSE:* ${license}
-*🪩 REPOSITORY:* ${repository}
-*🔗 NPM URL:* ${npmUrl}
-`;
+> *XERO-MD* • ⚡ POWER - SPEED - CONTROL
+`.trim();
 
     // Send the message
     await conn.sendMessage(from, { text: message }, { quoted: mek });
@@ -49,16 +51,13 @@ cmd({
   } catch (error) {
     console.error("Error:", error);
 
-    // Send detailed error logs to WhatsApp
-    const errorMessage = `
-*❌ NPM Command Error Logs*
-
-*Error Message:* ${error.message}
-*Stack Trace:* ${error.stack || "Not available"}
-*Timestamp:* ${new Date().toISOString()}
-`;
-
-    await conn.sendMessage(from, { text: errorMessage }, { quoted: mek });
-    reply("An error occurred while fetching the npm package details.");
+    // Send simplified error to avoid clutter
+    let errorMsg = "❌ An error occurred while fetching npm package details.\n\n";
+    if (error.response && error.response.status === 404) {
+      errorMsg = `❌ Package "${args.join(' ')}" not found on npm.`;
+    } else {
+      errorMsg += `Error: ${error.message}`;
+    }
+    reply(errorMsg);
   }
 });
