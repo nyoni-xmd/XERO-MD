@@ -4,7 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require("path");
 const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
-const { cmd } = require("../DianaTech");
+const { cmd } = require('../command');  // ← Imebadilishwa kutoka DianaTech → command
 const config = require('../config');
 
 cmd({
@@ -104,7 +104,7 @@ cmd({
 ┃ 🔗 *URL:* ${mediaUrl}
 ╰━━━━━━━━━━━━━━━━━━⬣
 
-✨ _Powered by ${config.BOT_NAME || "DianaTech"}_`
+✨ _Powered by ${config.BOT_NAME || "XERO-MD"}_`
     );
 
   } catch (error) {
