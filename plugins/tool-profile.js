@@ -1,6 +1,7 @@
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command');  // Badala ya DianaTech
 const { getBuffer, fetchJson } = require('../lib/functions');
 
+// Fake contact ya ku-quote (ili kuongeza uhalisi)
 const fakeContact = {
     key: {
         fromMe: false,
@@ -9,13 +10,14 @@ const fakeContact = {
     },
     message: {
         contactMessage: {
-            displayName: "QUEEN LORA VERIFIED ✅",
+            displayName: "XERO-MD VERIFIED ✅",
             vcard: `
 BEGIN:VCARD
 VERSION:3.0
-FN:DIANA TECH
-ORG:QUEEN LORA PROFILE
-TEL;type=CELL;type=VOICE;waid=18492823944:+18492823944
+FN:nyoni-xmd
+ORG:XERO-MD
+TEL;type=CELL;type=VOICE;waid=255763111390:+255763111390
+TEL;type=CELL;type=VOICE;waid=255610209120:+255610209120
 END:VCARD`
         }
     }
@@ -32,7 +34,6 @@ cmd({
 },
 async (conn, mek, m, { from, sender, isGroup, reply, quoted, participants }) => {
     try {
-
         let userJid = quoted?.sender || 
                      mek.message?.extendedTextMessage?.contextInfo?.mentionedJid?.[0] || 
                      sender;
@@ -124,8 +125,8 @@ ${isGroup ? `┃ ✦ 👥 Role : ${groupRole}` : ''}
                 forwardingScore: 999,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: "120363336396621021@newsletter",
-                    newsletterName: "ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴅɪᴀɴᴀ ᴛᴇᴄʜ",
+                    newsletterJid: "120363399470975987@newsletter",
+                    newsletterName: "XERO-MD",
                     serverMessageId: Math.floor(Math.random() * 1000)
                 }
             }
