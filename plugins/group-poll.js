@@ -1,9 +1,7 @@
 //---------------------------------------------------------------------------
-//           DIANA TECH 
+//           XERO-MD POLL COMMAND
 //---------------------------------------------------------------------------
-//  ⚠️ DO NOT MODIFY THIS FILE ⚠️  
-//----------------------------------------------------------------------------------------------------------------------------------------------------
-const { cmd, commands } = require('../DianaTech');
+const { cmd, commands } = require('../command'); // ✅ Badala ya DianaTech
 const config = require('../config');
 const prefix = config.PREFIX;
 const fs = require('fs');
