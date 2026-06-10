@@ -1,13 +1,13 @@
-const { cmd } = require("../DianaTech");
+const { cmd } = require("../command");
 const config = require("../config");
 const os = require("os");
 
-let botVersion = "1.0.0";
+let botVersion = "2.0.0";
 
 try {
-  botVersion = require("../../package.json").version || "1.0.0";
+  botVersion = require("../../package.json").version || "2.0.0";
 } catch {
-  botVersion = "1.0.0";
+  botVersion = "2.0.0";
 }
 
 function formatBytes(bytes) {
@@ -26,7 +26,7 @@ function formatUptime(seconds) {
   return `${days}d ${hours}h ${minutes}m ${secs}s`;
 }
 
-// ✅ KORIJE: Fake message pou quotation
+// Fake quoted message for XERO-MD
 const botInfoMsg = {
   key: {
     fromMe: false,
@@ -34,7 +34,7 @@ const botInfoMsg = {
     remoteJid: "status@broadcast"
   },
   message: {
-    conversation: "📊 Bot Information System"
+    conversation: "📊 XERO-MD System Info"
   }
 };
 
@@ -59,7 +59,7 @@ cmd({
     const cpuModel = cpuInfo[0]?.model || "Unknown CPU";
     const cpuCores = cpuInfo.length || 1;
 
-    // ✅ KORIJE: Jwenn kantite lòd yo (commands)
+    // Count total commands
     let totalCommands = 0;
     if (global.commands && Array.isArray(global.commands)) {
       totalCommands = global.commands.length;
@@ -68,22 +68,20 @@ cmd({
     } else if (global._commands && typeof global._commands.size === "number") {
       totalCommands = global._commands.size;
     } else {
-      totalCommands = 42; // Vale default si pa ka jwenn
+      totalCommands = 52; // default value
     }
 
-    // ✅ KORIJE: Jwenn non bot la (oubyen itilize config.BOT_NAME)
-    const botName = config.BOT_NAME || "QUEEN-LORA";
-    const menuImage = config.MENU_IMAGE_URL || "https://files.catbox.moe/7q7n4y.jpg";
-    const newsletterJid = config.NEWSLETTER || "120363304975640293@newsletter";
-    const newsletterName = config.NEWSLETTER_NAME || "DIANA TECH UPDATES";
+    const botName = config.BOT_NAME || "XERO-MD";
+    const menuImage = config.ALIVE_IMG || "https://files.catbox.moe/gyaka2.png";
+    const newsletterJid = "120363418161689316@newsletter";
+    const newsletterName = "XERO-MD";
 
-    // ✅ KORIJE: Chèche idantite voyeur a (sender)
     const senderId = m?.sender || mek?.key?.remoteJid || from;
     const senderName = senderId.split("@")[0] || "User";
 
     const dec = `
 ╭━━━━━━━━━━━━━━━━━━━━━━━⬣
-┃ 🤖 ${botName} BOT
+┃ 🤖 ${botName} BOT INFO
 ╰━━━━━━━━━━━━━━━━━━━━━━━⬣
 
 👋 Hello @${senderName}
@@ -107,7 +105,7 @@ cmd({
 ┃ 📦 RAM Total : ${formatBytes(totalMem)}
 ┃ ⏱️ System Uptime : ${formatUptime(os.uptime())}
 ╰━━━━━━━━━━━━━━━━━━⬣
-> «© DIANA TECH INC »
+> ⚡ XERO-MD • Powered by NYONI XMD
 `;
 
     await conn.sendMessage(
