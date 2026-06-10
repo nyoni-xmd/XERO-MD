@@ -1,7 +1,7 @@
-const { cmd } = require('../DianaTech');
+const { cmd } = require('../command');  // Badala ya DianaTech
 const axios = require('axios');
 
-// ✅ VERIFIED CONTACT
+// ✅ VERIFIED CONTACT (XERO-MD)
 const fakeContact = {
     key: {
         fromMe: false,
@@ -10,13 +10,14 @@ const fakeContact = {
     },
     message: {
         contactMessage: {
-            displayName: "QUEEN LORA VERIFIED ✅",
+            displayName: "XERO-MD VERIFIED ✅",
             vcard: `
 BEGIN:VCARD
 VERSION:3.0
-FN:DIANA TECH
-ORG:QUEEN LORA INFO
-TEL;type=CELL;type=VOICE;waid=18492823944:+18492823944
+FN:nyoni-xmd
+ORG:XERO-MD INFO
+TEL;type=CELL;type=VOICE;waid=255763111390:+255763111390
+TEL;type=CELL;type=VOICE;waid=255610209120:+255610209120
 END:VCARD`
         }
     }
@@ -24,7 +25,7 @@ END:VCARD`
 
 cmd({
     pattern: "countryinfo",
-    alias: ["cinfo", "country","cinfo2"],
+    alias: ["cinfo", "country", "cinfo2"],
     desc: "Get information about a country",
     category: "info",
     react: "🌍",
@@ -32,7 +33,7 @@ cmd({
 },
 async (conn, mek, m, { from, args, q, reply, react }) => {
     try {
-        if (!q) return reply("Please provide a country name.\nExample: `.countryinfo Pakistan`");
+        if (!q) return reply("Please provide a country name.\nExample: `.countryinfo Tanzania`");
 
         const apiUrl = `https://api.siputzx.my.id/api/tools/countryInfo?name=${encodeURIComponent(q)}`;
         const { data } = await axios.get(apiUrl);
@@ -66,12 +67,12 @@ async (conn, mek, m, { from, args, q, reply, react }) => {
             contextInfo: { 
                 mentionedJid: [m.sender],
 
-                // ✅ NEWSLETTER HEADER
+                // ✅ NEWSLETTER HEADER (XERO-MD)
                 forwardingScore: 999,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: "120363336396621021@newsletter",
-                    newsletterName: "ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴅɪᴀɴᴀ ᴛᴇᴄʜ",
+                    newsletterJid: "120363399470975987@newsletter",
+                    newsletterName: "XERO-MD",
                     serverMessageId: Math.floor(Math.random() * 1000)
                 }
             }
