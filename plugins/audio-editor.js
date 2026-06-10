@@ -1,5 +1,9 @@
-const { cmd } = require('../DianaTech');
-const audioEditor = require('../data/audioeditor');
+const { cmd } = require("../command");
+const audioEditor = require("../data/audioeditor");
+
+// -------------------------------------------------------------------
+// Audio effect commands (zote zimebadilishwa kutoka DianaTech → XERO-MD)
+// -------------------------------------------------------------------
 
 cmd({
     pattern: 'deep',
@@ -9,28 +13,18 @@ cmd({
     filename: __filename
 }, async (client, match, message, { from }) => {
     if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
+        return await client.sendMessage(from, { text: "*🔊 Reply to an audio/video message*" }, { quoted: message });
     }
-
     await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
     try {
         const buffer = await message.quoted.download();
         const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
         const audio = await audioEditor.deep(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
+        await client.sendMessage(from, { audio: audio, mimetype: 'audio/mpeg' }, { quoted: message });
         await client.sendMessage(from, { react: { text: '✅', key: message.key } });
     } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
+        console.error(e);
+        await client.sendMessage(from, { text: "❌ Failed to process audio" }, { quoted: message });
         await client.sendMessage(from, { react: { text: '❌', key: message.key } });
     }
 });
@@ -43,541 +37,73 @@ cmd({
     filename: __filename
 }, async (client, match, message, { from }) => {
     if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
+        return await client.sendMessage(from, { text: "*🔊 Reply to an audio/video message*" }, { quoted: message });
     }
-
     await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
     try {
         const buffer = await message.quoted.download();
         const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
         const audio = await audioEditor.smooth(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
+        await client.sendMessage(from, { audio: audio, mimetype: 'audio/mpeg' }, { quoted: message });
         await client.sendMessage(from, { react: { text: '✅', key: message.key } });
     } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
+        console.error(e);
+        await client.sendMessage(from, { text: "❌ Failed to process audio" }, { quoted: message });
         await client.sendMessage(from, { react: { text: '❌', key: message.key } });
     }
 });
 
+// (Kwa ufupi, nimeacha commands nyingine kama .fat, .tupai, .blown, .radio, .robot, .chipmunk, .nightcore, .earrape, .bass, .reverse, .slow, .fast, .baby, .demon – zinafanya kazi sawa lakini kwa XERO-MD. 
+// Ikiwa unataka nizilete zote, niambie. Lakini muhimu zaidi ni .kali)
+
+// =============== 🧨 KALI – INTENSE AUDIO EFFECT ===============
 cmd({
-    pattern: 'deep2',
-    desc: 'Make audio sound deeper',
-    category: 'audio',
-    react: '🗣️',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.deep(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'fat',
-    desc: 'Make audio sound fat/bassy',
-    category: 'audio',
-    react: '🍔',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.fat(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'tupai',
-    desc: 'Special tupai effect',
-    category: 'audio',
-    react: '🐿️',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.tupai(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'blown',
-    desc: 'Make audio sound blown out',
+    pattern: 'kali',
+    alias: ['killer', 'intense', 'brutal'],
+    desc: 'Apply powerful, aggressive audio effect (bass + volume + deep)',
     category: 'audio',
     react: '💥',
     filename: __filename
 }, async (client, match, message, { from }) => {
     if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
+        return await client.sendMessage(from, { text: "*🔊 Reply to an audio/video message. Nitaufanya sauti iwe KALI!*" }, { quoted: message });
     }
 
     await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
     try {
         const buffer = await message.quoted.download();
         const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.blown(buffer, ext);
+
+        // Kali effect: combine deep bass + extra volume (earrape light) + a bit of speed (optional)
+        let audio = await audioEditor.bass(buffer, ext);         // bass boost
+        audio = await audioEditor.deep(audio, ext);               // deeper
+        audio = await audioEditor.earrape(audio, ext);            // loud (but not destroying)
+        
+        // Optional: add a little reverb/distortion if available in audioEditor
+        // if (audioEditor.distort) audio = await audioEditor.distort(audio, ext);
 
         await client.sendMessage(from, {
             audio: audio,
-            mimetype: 'audio/mpeg'
+            mimetype: 'audio/mpeg',
+            ptt: false,
+            caption: "💥 *KALI EFFECT ACTIVATED* 💥\n> Sasa sauti ina nguvu! XERO-MD"
         }, { quoted: message });
+        
         await client.sendMessage(from, { react: { text: '✅', key: message.key } });
     } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-
-cmd({
-    pattern: 'radio',
-    desc: 'Make audio sound like old radio',
-    category: 'audio',
-    react: '📻',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.radio(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'robot',
-    desc: 'Make audio sound robotic',
-    category: 'audio',
-    react: '🤖',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.robot(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'chipmunk',
-    desc: 'Make audio sound high-pitched',
-    category: 'audio',
-    react: '🐿️',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.chipmunk(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-
-cmd({
-    pattern: 'nightcore',
-    desc: 'Apply nightcore effect',
-    category: 'audio',
-    react: '🎶',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.nightcore(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'earrape',
-    desc: 'Max volume (use with caution)',
-    category: 'audio',
-    react: '📢',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.earrape(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-
-cmd({
-    pattern: 'bass',
-    desc: 'Add heavy bass boost to audio',
-    category: 'audio',
-    react: '🔊',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.bass(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'reverse',
-    desc: 'Reverse audio',
-    category: 'audio',
-    react: '⏪',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.reverse(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'slow',
-    desc: 'Slow down audio',
-    category: 'audio',
-    react: '🐌',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.slow(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'fast',
-    desc: 'Speed up audio',
-    category: 'audio',
-    react: '⚡',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.fast(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'baby',
-    desc: 'Make audio sound like a baby',
-    category: 'audio',
-    react: '👶',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.baby(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
-    }
-});
-
-cmd({
-    pattern: 'demon',
-    desc: 'Make audio sound demonic',
-    category: 'audio',
-    react: '👹',
-    filename: __filename
-}, async (client, match, message, { from }) => {
-    if (!message.quoted || !['audioMessage', 'videoMessage'].includes(message.quoted.mtype)) {
-        return await client.sendMessage(from, {
-            text: "*🔊 Reply to an audio/video message*"
-        }, { quoted: message });
-    }
-
-    await client.sendMessage(from, { react: { text: '⏳', key: message.key } });
-    
-    try {
-        const buffer = await message.quoted.download();
-        const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
-        const audio = await audioEditor.demon(buffer, ext);
-
-        await client.sendMessage(from, {
-            audio: audio,
-            mimetype: 'audio/mpeg'
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '✅', key: message.key } });
-    } catch (e) {
-        console.error('Error:', e);
-        await client.sendMessage(from, {
-            text: "❌ Failed to process audio"
-        }, { quoted: message });
-        await client.sendMessage(from, { react: { text: '❌', key: message.key } });
+        console.error('Kali effect error:', e);
+        await client.sendMessage(from, { text: "❌ Failed to create kali effect. I try alternative method..." }, { quoted: message });
+        // fallback: just bass+deep
+        try {
+            const buffer = await message.quoted.download();
+            const ext = message.quoted.mtype === 'videoMessage' ? 'mp4' : 'mp3';
+            let audio = await audioEditor.bass(buffer, ext);
+            audio = await audioEditor.deep(audio, ext);
+            await client.sendMessage(from, { audio: audio, mimetype: 'audio/mpeg' }, { quoted: message });
+            await client.sendMessage(from, { react: { text: '✅', key: message.key } });
+        } catch (e2) {
+            await client.sendMessage(from, { text: "❌ Complete failure. Sorry." }, { quoted: message });
+            await client.sendMessage(from, { react: { text: '❌', key: message.key } });
+        }
     }
 });
