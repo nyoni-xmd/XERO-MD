@@ -1,17 +1,20 @@
 const fs = require("fs");
 const path = require("path");
-const { cmd } = require("../DianaTech");
+const { cmd } = require("../command"); // ✅ Changed to XERO-MD command handler
 
-const OWNER_PATH = path.join(__dirname, "../assets/sudo.json");
+// Path to store temporary owners
+const SUDO_PATH = path.join(__dirname, "../assets/sudo.json");
 
-// Ensure the sudo.json file exists
-const ensureOwnerFile = () => {
-  if (!fs.existsSync(OWNER_PATH)) {
-    fs.writeFileSync(OWNER_PATH, JSON.stringify([]));
+// Ensure the JSON file exists
+const ensureSudoFile = () => {
+  if (!fs.existsSync(SUDO_PATH)) {
+    fs.writeFileSync(SUDO_PATH, JSON.stringify([]));
   }
 };
 
-// Command: Add a temporary owner
+// --------------------------------------------------------------------
+// 1. Add a temporary owner (sudo)
+// --------------------------------------------------------------------
 cmd({
     pattern: "setsudo",
     alias: ["addsudo", "addowner"],
@@ -19,30 +22,31 @@ cmd({
     category: "owner",
     react: "😇",
     filename: __filename
-}, async (conn, mek, m, { from, args, q, isCreator, reply }) => {
+}, async (conn, mek, m, { from, args, isCreator, reply }) => {
     try {
-        if (!isCreator) return reply("_❗This Command Can Only Be Used By My Owner!_");
+        if (!isCreator) return reply("❌ *Access Denied!*\nOnly the main owner can use this command.");
 
-        // Identify the target user
+        // Identify target user (mention, reply, or phone number)
         let target = m.mentionedJid?.[0] 
             || (m.quoted?.sender ?? null)
             || (args[0]?.replace(/[^0-9]/g, '') + "@s.whatsapp.net");
 
-        if (!target) return reply("❌ Please provide a number or tag/reply a user.");
+        if (!target) return reply("❌ Please provide a number or tag/reply to a user.");
 
-        let owners = JSON.parse(fs.readFileSync(OWNER_PATH, "utf-8"));
+        ensureSudoFile();
+        let sudoList = JSON.parse(fs.readFileSync(SUDO_PATH, "utf-8"));
 
-        if (owners.includes(target)) {
-            return reply("❌ This user is already a temporary owner.");
+        if (sudoList.includes(target)) {
+            return reply("⚠️ This user is already a temporary owner.");
         }
 
-        owners.push(target);
-        const uniqueOwners = [...new Set(owners)];
-        fs.writeFileSync(OWNER_PATH, JSON.stringify(uniqueOwners, null, 2));
+        sudoList.push(target);
+        const uniqueList = [...new Set(sudoList)];
+        fs.writeFileSync(SUDO_PATH, JSON.stringify(uniqueList, null, 2));
 
-        const successMsg = "✅ Successfully Added User As Temporary Owner";
+        const successMsg = `✅ *Temporary owner added successfully!*\n\n👤 User: ${target.replace("@s.whatsapp.net", "")}`;
         await conn.sendMessage(from, {
-            image: { url: "https://files.catbox.moe/3lzhi9.jpg" },
+            image: { url: "https://files.catbox.moe/gyaka2.png" }, // ✅ XERO-MD image
             caption: successMsg
         }, { quoted: mek });
     } catch (err) {
@@ -51,7 +55,9 @@ cmd({
     }
 });
 
-// Command: Remove a temporary owner
+// --------------------------------------------------------------------
+// 2. Remove a temporary owner
+// --------------------------------------------------------------------
 cmd({
     pattern: "delsudo",
     alias: ["delowner", "deletesudo"],
@@ -59,28 +65,29 @@ cmd({
     category: "owner",
     react: "🫩",
     filename: __filename
-}, async (conn, mek, m, { from, args, q, isCreator, reply }) => {
+}, async (conn, mek, m, { from, args, isCreator, reply }) => {
     try {
-        if (!isCreator) return reply("_❗This Command Can Only Be Used By My Owner!_");
+        if (!isCreator) return reply("❌ *Access Denied!*\nOnly the main owner can use this command.");
 
         let target = m.mentionedJid?.[0] 
             || (m.quoted?.sender ?? null)
             || (args[0]?.replace(/[^0-9]/g, '') + "@s.whatsapp.net");
 
-        if (!target) return reply("❌ Please provide a number or tag/reply a user.");
+        if (!target) return reply("❌ Please provide a number or tag/reply to a user.");
 
-        let owners = JSON.parse(fs.readFileSync(OWNER_PATH, "utf-8"));
+        ensureSudoFile();
+        let sudoList = JSON.parse(fs.readFileSync(SUDO_PATH, "utf-8"));
 
-        if (!owners.includes(target)) {
-            return reply("❌ User not found in owner list.");
+        if (!sudoList.includes(target)) {
+            return reply("❌ User not found in the temporary owner list.");
         }
 
-        const updated = owners.filter(x => x !== target);
-        fs.writeFileSync(OWNER_PATH, JSON.stringify(updated, null, 2));
+        const updatedList = sudoList.filter(x => x !== target);
+        fs.writeFileSync(SUDO_PATH, JSON.stringify(updatedList, null, 2));
 
-        const successMsg = "✅ Successfully Removed User As Temporary Owner";
+        const successMsg = `✅ *Temporary owner removed successfully!*\n\n👤 User: ${target.replace("@s.whatsapp.net", "")}`;
         await conn.sendMessage(from, {
-            image: { url: "https://files.catbox.moe/3lzhi9.jpg" },
+            image: { url: "https://files.catbox.moe/gyaka2.png" },
             caption: successMsg
         }, { quoted: mek });
     } catch (err) {
@@ -89,32 +96,35 @@ cmd({
     }
 });
 
-// Command: List all temporary owners
+// --------------------------------------------------------------------
+// 3. List all temporary owners
+// --------------------------------------------------------------------
 cmd({
     pattern: "listsudo",
-    alias: ["listowner"],
+    alias: ["listowner", "sudolist"],
     desc: "List all temporary owners",
     category: "owner",
     react: "📋",
     filename: __filename
 }, async (conn, mek, m, { from, isCreator, reply }) => {
     try {
-        if (!isCreator) return reply("_❗This Command Can Only Be Used By My Owner!_");
+        if (!isCreator) return reply("❌ *Access Denied!*\nOnly the main owner can use this command.");
 
-        let owners = JSON.parse(fs.readFileSync(OWNER_PATH, "utf-8"));
-        owners = [...new Set(owners)];
+        ensureSudoFile();
+        let sudoList = JSON.parse(fs.readFileSync(SUDO_PATH, "utf-8"));
+        sudoList = [...new Set(sudoList)];
 
-        if (owners.length === 0) {
-            return reply("❌ No temporary owners found.");
+        if (sudoList.length === 0) {
+            return reply("📋 No temporary owners found.");
         }
 
-        let listMessage = "`🤴 List of Sudo Owners:`\n\n";
-        owners.forEach((owner, i) => {
+        let listMessage = "👑 *Temporary Owners List*\n\n";
+        sudoList.forEach((owner, i) => {
             listMessage += `${i + 1}. ${owner.replace("@s.whatsapp.net", "")}\n`;
         });
 
         await conn.sendMessage(from, {
-            image: { url: "https://files.catbox.moe/3lzhi9.jpg" },
+            image: { url: "https://files.catbox.moe/gyaka2.png" },
             caption: listMessage
         }, { quoted: mek });
     } catch (err) {
@@ -122,4 +132,3 @@ cmd({
         reply("❌ Error: " + err.message);
     }
 });
-                
