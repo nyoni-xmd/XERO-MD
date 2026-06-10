@@ -1,4 +1,4 @@
-const { cmd } = require("../DianaTech");
+const { cmd } = require("../command"); // ← imebadilishwa kutoka DianaTech → command
 const config = require("../config");
 
 const reportedMessages = new Set();
@@ -11,13 +11,13 @@ const fakeVerified = {
     },
     message: {
         contactMessage: {
-            displayName: "☘️ QUEEN DIANA TECH ☘️",
+            displayName: "⚡ KALI-MD ⚡",
             vcard: `BEGIN:VCARD
 VERSION:3.0
-FN:QUEEN LORA BOT
-ORG:DIANA TECH VERIFIED;
+FN:KALI-MD BOT
+ORG:KALI-MD VERIFIED;
 TITLE:Official WhatsApp Bot
-TEL;type=CELL;waid=18492823944:+18492823944
+TEL;type=CELL;waid=255763111390:+255763111390
 END:VCARD`
         }
     }
@@ -33,18 +33,18 @@ cmd({
 },
 async (conn, mek, m, { args, reply }) => {
     try {
-        const devNumber = "18492823944";
+        const devNumber = "255763111390"; // Owner number KALI-MD
 
         if (!args.length) {
             return reply(
 `╭━━〔 📩 REPORT SYSTEM 〕━━⬣
 ┃
 ┃ Example:
-┃ ${config.PREFIX}report Play command is not working
+┃ ${config.PREFIX || '.'}report Play command is not working
 ┃
-┃ ${config.PREFIX}bug Menu not showing image
+┃ ${config.PREFIX || '.'}bug Menu not showing image
 ┃
-┃ ${config.PREFIX}request Add TikTok downloader
+┃ ${config.PREFIX || '.'}request Add TikTok downloader
 ┃
 ╰━━━━━━━━━━━━━━⬣`
             );
@@ -71,14 +71,14 @@ async (conn, mek, m, { args, reply }) => {
 ┃
 ╰━━━━━━━━━━━━━━⬣
 
-> Powered By DianaTech
+> 🔥 Powered By KALI-MD
 `;
 
         await conn.sendMessage(
             `${devNumber}@s.whatsapp.net`,
             {
                 image: {
-                    url: config.MENU_IMAGE_URL
+                    url: config.ALIVE_IMG || "https://files.catbox.moe/gyaka2.png"
                 },
                 caption: reportText,
                 mentions: [m.sender]
@@ -105,7 +105,7 @@ async (conn, mek, m, { args, reply }) => {
 ┃
 ╰━━━━━━━━━━━━━━⬣
 
-> DianaTech Reporting System`
+> ⚡ KALI-MD Reporting System`
             },
             {
                 quoted: fakeVerified
