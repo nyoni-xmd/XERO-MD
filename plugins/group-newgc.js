@@ -1,4 +1,4 @@
-const { cmd, commands } = require('../DianaTech');
+const { cmd, commands } = require('../command'); // ✅ Badala ya DianaTech
 const config = require('../config');
 const prefix = config.PREFIX;
 const fs = require('fs');
@@ -11,31 +11,41 @@ cmd({
   category: "group",
   desc: "Create a new group and add participants.",
   filename: __filename,
-}, async (conn, mek, m, { from, isGroup, body, sender, groupMetadata, participants, reply }) => {
+}, async (conn, mek, m, { from, isGroup, body, sender, groupMetadata, participants, reply, prefix }) => {
   try {
     if (!body) {
-      return reply(`Usage: !newgc group_name;number1,number2,...`);
+      return reply(`Usage: ${prefix}newgc group_name;number1,number2,...`);
     }
 
     const [groupName, numbersString] = body.split(";");
     
     if (!groupName || !numbersString) {
-      return reply(`Usage: !newgc group_name;number1,number2,...`);
+      return reply(`Usage: ${prefix}newgc group_name;number1,number2,...`);
     }
 
-    const participantNumbers = numbersString.split(",").map(number => `${number.trim()}@s.whatsapp.net`);
+    // Clean numbers: remove spaces, ensure format
+    const participantNumbers = numbersString.split(",").map(number => {
+      let cleaned = number.trim().replace(/[^0-9]/g, '');
+      return `${cleaned}@s.whatsapp.net`;
+    });
+
+    if (participantNumbers.length === 0) {
+      return reply("❌ Please provide at least one phone number.");
+    }
 
     const group = await conn.groupCreate(groupName, participantNumbers);
-    console.log('created group with id: ' + group.id); // Use group.id here
+    
+    // Get invite link
+    const inviteCode = await conn.groupInviteCode(group.id);
+    const inviteLink = `https://chat.whatsapp.com/${inviteCode}`;
 
-    const inviteLink = await conn.groupInviteCode(group.id); // Use group.id to get the invite link
+    // Optional welcome message
+    await conn.sendMessage(group.id, { text: `Welcome to ${groupName}! 🎉\n\nGroup created by XERO-MD` });
 
-    await conn.sendMessage(group.id, { text: 'hello there' });
+    reply(`✅ *Group created successfully!*\n\n📛 *Name:* ${groupName}\n🔗 *Invite Link:* ${inviteLink}\n👥 *Members added:* ${participantNumbers.length}\n\n> XERO-MD`);
 
-    reply(`Group created successfully with invite link: https://chat.whatsapp.com/${inviteLink}\nWelcome message sent.`);
   } catch (e) {
-    return reply(`*An error occurred while processing your request.*\n\n_Error:_ ${e.message}`);
+    console.error(e);
+    return reply(`❌ *Error creating group:*\n${e.message}`);
   }
 });
-
-
