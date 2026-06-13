@@ -1,0 +1,6 @@
+# heroku.yml – XERO-MD Container Deployment
+build:
+  docker:
+    web: Dockerfile
+run:
+  web: node index.js
