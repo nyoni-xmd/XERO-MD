@@ -1,6 +1,31 @@
-node_modules
-sessions
+# XERO-MD .gitignore
+
+# Dependency directories
+node_modules/
+package-lock.json
+yarn.lock
+
+# Session files (credentials) – DO NOT SHARE
+sessions/
+creds.json
+
+# Environment config (contains SESSION_ID, etc.)
 config.env
+.env
+
+# Log files
 *.log
-temp*
+npm-debug.log*
+
+# OS metadata
 .DS_Store
+Thumbs.db
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# IDE files
+.vscode/
+.idea/
