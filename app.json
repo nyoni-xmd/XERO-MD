@@ -1,0 +1,13 @@
+{
+  "name": "XERO-MD",
+  "description": "XERO-MD WhatsApp Bot",
+  "logo": "https://files.catbox.moe/gyaka2.png",
+  "keywords": ["xero-md", "whatsapp-bot"],
+  "env": {
+    "SESSION_ID": { "description": "Your session ID (POPKID;;;...)", "required": true },
+    "PREFIX": { "description": "Command prefix", "value": "." },
+    "MODE": { "description": "Bot mode (public/private)", "value": "public" }
+  },
+  "buildpacks": [ { "url": "https://github.com/heroku/heroku-buildpack-nodejs.git" } ],
+  "stack": "heroku-24"
+}
