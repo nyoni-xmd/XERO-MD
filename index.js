@@ -1,4 +1,4 @@
-// XERO-MD Main Index File
+// ======================== XERO-MD COMPLETE INDEX ========================
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, jidNormalizedUser, getContentType, generateForwardMessageContent, generateWAMessageFromContent, jidDecode, fetchLatestBaileysVersion, Browsers, downloadContentFromMessage, proto } = require('@whiskeysockets/baileys');
 const fs = require('fs');
 const P = require('pino');
@@ -9,16 +9,14 @@ const path = require('path');
 const axios = require('axios');
 const FileType = require('file-type');
 const os = require('os');
-const { sms, AntiDelete } = require('./lib/functions');
-const GroupEvents = require('./lib/groupevents');
-const { saveMessage } = require('./data/database');
 
+// ========== CONFIG ==========
 const prefix = config.PREFIX || ".";
 const ownerNumber = ['255763111390', '255610209120'];
 const app = express();
 const port = process.env.PORT || 9090;
 
-// Command system
+// ========== GLOBAL COMMAND SYSTEM ==========
 const commands = new Map();
 const aliases = new Map();
 global.commandsArray = [];
@@ -34,69 +32,128 @@ function getCommand(name) { return commands.get(name) || commands.get(aliases.ge
 global.registerCommand = registerCommand;
 global.getCommand = getCommand;
 
-// Session folder
+// ========== SESSION HANDLING ==========
 if (!fs.existsSync('./sessions')) fs.mkdirSync('./sessions');
 if (!fs.existsSync('./sessions/creds.json') && config.SESSION_ID) {
     let sessdata = config.SESSION_ID.replace("POPKID;;;", '').trim();
     File.fromURL(`https://mega.nz/file/${sessdata}`).download((err, data) => {
         if (!err) fs.writeFileSync('./sessions/creds.json', data);
-        else console.log('Session download error:', err.message);
+        else console.error('Session download error:', err.message);
     });
 }
 
-// Temp cleaner
+// ========== TEMP CLEANER ==========
 const tempDir = path.join(os.tmpdir(), 'xero_temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-setInterval(() => fs.readdir(tempDir, (_, f) => f.forEach(f => fs.unlink(path.join(tempDir, f), () => {}))), 300000);
+setInterval(() => {
+    fs.readdir(tempDir, (_, files) => {
+        files.forEach(f => fs.unlink(path.join(tempDir, f), () => {}));
+    });
+}, 5 * 60 * 1000);
 
-// Helpers
-const getBuffer = async (url) => (await axios({ url, responseType: 'arraybuffer' })).data;
-const getGroupAdmins = (p) => p.filter(m => m.admin).map(m => m.id);
+// ========== HELPERS ==========
+async function getBuffer(url) {
+    try {
+        const res = await axios({ url, responseType: 'arraybuffer', timeout: 15000 });
+        return res.data;
+    } catch { return null; }
+}
+function getGroupAdmins(participants) {
+    return participants.filter(p => p.admin).map(p => p.id);
+}
+async function downloadMediaMessage(msg) {
+    const stream = await downloadContentFromMessage(msg, msg.mimetype?.split('/')[0] || 'image');
+    let buffer = Buffer.from([]);
+    for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk]);
+    return buffer;
+}
+async function AntiDelete(conn, updates) { /* dummy – can be expanded */ console.log('AntiDelete triggered'); }
+async function saveMessage(m) { /* dummy database */ return true; }
 
-// Load plugins
+// ========== PLUGIN LOADER ==========
 function loadPlugins() {
     const pluginsDir = './plugins';
     if (!fs.existsSync(pluginsDir)) fs.mkdirSync(pluginsDir);
     const files = fs.readdirSync(pluginsDir).filter(f => f.endsWith('.js'));
-    files.forEach(f => { try { require(`./plugins/${f}`); console.log(`✅ ${f}`); } catch(e) { console.log(`❌ ${f}: ${e.message}`); } });
+    for (const f of files) {
+        try {
+            require(path.join(pluginsDir, f));
+            console.log(`✅ Loaded plugin: ${f}`);
+        } catch (e) {
+            console.log(`❌ Failed to load ${f}: ${e.message}`);
+        }
+    }
     console.log(`✅ Total commands: ${global.commandsArray.length}`);
 }
 
-// Connection
+// ========== MAIN CONNECTION ==========
 let reconnectTimer;
 async function connectToWA() {
-    console.log('Connecting to WhatsApp...');
+    console.log("Connecting to WhatsApp...");
     const { state, saveCreds } = await useMultiFileAuthState('./sessions');
     const { version } = await fetchLatestBaileysVersion();
-    const conn = makeWASocket({ logger: P({ level: 'silent' }), printQRInTerminal: false, browser: Browsers.macOS('Firefox'), auth: state, version });
+    const conn = makeWASocket({
+        logger: P({ level: 'silent' }),
+        printQRInTerminal: false,
+        browser: Browsers.macOS('Firefox'),
+        auth: state,
+        version
+    });
 
     conn.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update;
         if (connection === 'close') {
-            if (lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut) {
-                if (reconnectTimer) clearTimeout(reconnectTimer);
-                reconnectTimer = setTimeout(() => { console.log('Reconnecting...'); connectToWA(); }, 5000);
-            } else console.log('Session expired. Update SESSION_ID.');
+            const code = lastDisconnect.error?.output?.statusCode;
+            if (code === DisconnectReason.loggedOut) {
+                console.log('Session expired. Update SESSION_ID.');
+                return;
+            }
+            if (reconnectTimer) clearTimeout(reconnectTimer);
+            reconnectTimer = setTimeout(() => {
+                console.log('Reconnecting...');
+                connectToWA();
+            }, 5000);
         } else if (connection === 'open') {
-            console.log('✅ XERO-MD Connected!');
+            console.log('✅ XERO-MD CONNECTED!');
             loadPlugins();
-            conn.sendMessage(conn.user.id, { image: { url: 'https://files.catbox.moe/gyaka2.png' }, caption: `XERO-MD ONLINE\nPrefix: ${prefix}\nMode: ${config.MODE}` }).catch(()=>{});
+            // Send startup message to owner
+            try {
+                await conn.sendMessage(conn.user.id, {
+                    image: { url: 'https://files.catbox.moe/gyaka2.png' },
+                    caption: `╭┈───────────────╮\n│ ◦ XERO-MD ONLINE\n│ ◦ DEV: nyoni-xmd\n│ ◦ PREFIX: ${prefix}\n│ ◦ MODE: ${config.MODE}\n│ ◦ COMMANDS: ${global.commandsArray.length}\n╰┈───────────────╯`
+                });
+            } catch(e) {}
         }
     });
     conn.ev.on('creds.update', saveCreds);
-    conn.ev.on('messages.update', async (up) => { for (let u of up) if (u.update.message === null) await AntiDelete(conn, up); });
-    conn.ev.on('group-participants.update', (u) => GroupEvents(conn, u));
+    conn.ev.on('messages.update', async (updates) => {
+        for (const u of updates) if (u.update.message === null) await AntiDelete(conn, updates);
+    });
+    conn.ev.on('group-participants.update', (update) => {
+        // GroupEvents can be implemented here or in a separate plugin
+        console.log('Group update:', update);
+    });
 
     conn.ev.on('messages.upsert', async (msg) => {
         let m = msg.messages[0];
         if (!m?.message) return;
+        // Decrypt ephemeral & viewOnce
         if (getContentType(m.message) === 'ephemeralMessage') m.message = m.message.ephemeralMessage.message;
         if (m.message.viewOnceMessageV2) m.message = m.message.viewOnceMessageV2.message;
         if (config.READ_MESSAGE === 'true') await conn.readMessages([m.key]);
+        // Auto status actions
         if (m.key?.remoteJid === 'status@broadcast') {
             if (config.AUTO_STATUS_SEEN === 'true') await conn.readMessages([m.key]);
-            if (config.AUTO_STATUS_REACT === 'true') await conn.sendMessage(m.key.remoteJid, { react: { text: ['❤️','🔥','💯','✨'][Math.floor(Math.random()*4)], key: m.key } }).catch(()=>{});
-            if (config.AUTO_STATUS_REPLY === 'true') await conn.sendMessage(m.key.participant, { text: config.AUTO_STATUS_MSG || 'Seen your status!' }, { quoted: m }).catch(()=>{});
+            if (config.AUTO_STATUS_REACT === 'true') {
+                const emojis = ['❤️','🔥','💯','✨','⭐','👑','💎','🏆'];
+                const react = emojis[Math.floor(Math.random() * emojis.length)];
+                await conn.sendMessage(m.key.remoteJid, { react: { text: react, key: m.key } }).catch(()=>{});
+            }
+            if (config.AUTO_STATUS_REPLY === 'true') {
+                const user = m.key.participant;
+                const replyText = config.AUTO_STATUS_MSG || 'Seen your status!';
+                await conn.sendMessage(user, { text: replyText }, { quoted: m }).catch(()=>{});
+            }
         }
         await saveMessage(m);
 
@@ -118,30 +175,55 @@ async function connectToWA() {
         const isGroup = from.endsWith('@g.us');
         const isOwner = ownerNumber.includes(senderNumber) || botNumber === senderNumber;
 
-        let gMeta, gName, parts=[], admins=[], botAdm=false, isAdm=false;
+        let groupName = '', participants = [], groupAdmins = [], isBotAdmins = false, isAdmins = false;
         if (isGroup) {
-            gMeta = await conn.groupMetadata(from).catch(()=>null);
-            gName = gMeta?.subject || '';
-            parts = gMeta?.participants || [];
-            admins = getGroupAdmins(parts);
-            const botJid = await jidNormalizedUser(conn.user.id);
-            botAdm = admins.includes(botJid);
-            isAdm = admins.includes(sender);
+            const meta = await conn.groupMetadata(from).catch(()=>null);
+            if (meta) {
+                groupName = meta.subject || '';
+                participants = meta.participants || [];
+                groupAdmins = getGroupAdmins(participants);
+                const botJid = await jidNormalizedUser(conn.user.id);
+                isBotAdmins = groupAdmins.includes(botJid);
+                isAdmins = groupAdmins.includes(sender);
+            }
         }
+
         const reply = (txt) => conn.sendMessage(from, { text: txt }, { quoted: m });
+
         if (isCmd) {
             const cmd = getCommand(command);
-            if (cmd) try { await cmd.function(conn, m, { message: m }, { from, reply, args, q, text: q, isGroup, sender, senderNumber, botNumber, isOwner, groupName: gName, participants: parts, groupAdmins: admins, isBotAdmins: botAdm, isAdmins: isAdm, prefix }); } catch(e) { reply(`Error: ${e.message}`); }
+            if (cmd) {
+                try {
+                    await cmd.function(conn, m, { message: m }, {
+                        from, reply, body, isCmd, command, args, q, text: q,
+                        isGroup, sender, senderNumber, botNumber, isOwner,
+                        groupName, participants, groupAdmins, isBotAdmins, isAdmins, prefix
+                    });
+                } catch (e) {
+                    console.error(e);
+                    reply(`❌ Error: ${e.message}`);
+                }
+            }
         }
     });
 
+    // Utility functions for plugins
     conn.decodeJid = (jid) => { let d = jidDecode(jid); return d?.user && d?.server ? `${d.user}@${d.server}` : jid; };
-    conn.downloadMediaMessage = async (msg) => { let s = await downloadContentFromMessage(msg, msg.mimetype?.split('/')[0] || 'image'); let b = Buffer.from([]); for await (const c of s) b = Buffer.concat([b, c]); return b; };
+    conn.downloadMediaMessage = downloadMediaMessage;
+    conn.sendImage = async (jid, path, caption, quoted) => {
+        let buf = Buffer.isBuffer(path) ? path : /^https?:\/\//.test(path) ? await getBuffer(path) : fs.existsSync(path) ? fs.readFileSync(path) : null;
+        if (buf) return conn.sendMessage(jid, { image: buf, caption }, { quoted });
+        return null;
+    };
+    conn.sendText = (jid, text, quoted) => conn.sendMessage(jid, { text }, { quoted });
 }
 
-app.get('/', (_, res) => res.send('XERO-MD Running'));
-app.listen(port, () => console.log(`Server on port ${port}`));
-setTimeout(connectToWA, 4000);
-process.on('uncaughtException', (e) => console.error(e.message));
-process.on('unhandledRejection', (e) => console.error(e));
-console.log('✅ XERO-MD STARTED');
+// ========== WEB SERVER ==========
+app.get('/', (_, res) => res.send('XERO-MD is running!'));
+app.listen(port, () => console.log(`Server running on port ${port}`));
+
+setTimeout(connectToWA, 3000);
+process.on('uncaughtException', (e) => console.error('Uncaught Exception:', e.message));
+process.on('unhandledRejection', (e) => console.error('Unhandled Rejection:', e));
+
+console.log('✅ XERO-MD starting...');
