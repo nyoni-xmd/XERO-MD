@@ -1,4 +1,4 @@
-// ======================== XERO-MD INDEX.JS (FULL) ========================
+
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -68,7 +68,7 @@ if (!fs.existsSync(__dirname + '/sessions')) {
     fs.mkdirSync(__dirname + '/sessions')
 }
 
-// ============ SESSION DOWNLOAD (Supports QUEEN-LORA~, XERO-MD>>>, jamali~) ============
+// ============ SESSION DOWNLOAD (Supports POPKID;;;, XERO-MD>>>, jamali~) ============
 if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
     if (!config.SESSION_ID || config.SESSION_ID === '') {
         console.log('========================================')
@@ -79,7 +79,7 @@ if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
         console.log('📥 Inapakua session...')
         // Remove any known prefixes
         let sessdata = config.SESSION_ID
-            .replace("QUEEN-LORA~", '')
+            .replace("POPKID;;;", '')
             .replace("XERO-MD>>>", '')
             .replace("jamali~", '')
             .trim()
