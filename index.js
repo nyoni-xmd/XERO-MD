@@ -1,4 +1,4 @@
-// index.js (XERO-MD) – Nakili hii kwenye mradi wako
+// ======================== XERO-MD INDEX (UHAKIKA) ========================
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, jidNormalizedUser, getContentType, fetchLatestBaileysVersion, Browsers, downloadContentFromMessage, jidDecode } = require('@whiskeysockets/baileys');
 const fs = require('fs');
 const P = require('pino');
@@ -9,10 +9,11 @@ const path = require('path');
 const axios = require('axios');
 const os = require('os');
 
-const prefix = config.PREFIX || ".";
-const ownerNumber = ['255763111390', '255610209120'];
+// ========== SETUP ==========
+const PREFIX = config.PREFIX || ".";
+const OWNER_NUMBERS = ['255763111390', '255610209120'];
 const app = express();
-const port = process.env.PORT || 9090;
+const PORT = process.env.PORT || 9090;
 
 // ========== COMMAND REGISTRY ==========
 global.commands = new Map();
@@ -27,70 +28,94 @@ function registerCommand(cmd) {
     }
     global.commandsList.push(cmd);
 }
+
 function getCommand(name) {
     return global.commands.get(name) || global.commands.get(global.aliases.get(name));
 }
+
 global.registerCommand = registerCommand;
 global.getCommand = getCommand;
 
-// ========== SESSION & TEMP ==========
+// ========== SESSION HANDLING ==========
 if (!fs.existsSync('./sessions')) fs.mkdirSync('./sessions');
+
 if (!fs.existsSync('./sessions/creds.json') && config.SESSION_ID) {
     let key = config.SESSION_ID.replace(/^(POPKID;;;|XERO-MD>>>|jamali~|QUEEN-LORA~)/, '').trim();
+    console.log("📥 Downloading session from MEGA...");
     File.fromURL(`https://mega.nz/file/${key}`).download((err, data) => {
-        if (!err) fs.writeFileSync('./sessions/creds.json', data);
-        else console.error('Session download error:', err.message);
+        if (!err) {
+            fs.writeFileSync('./sessions/creds.json', data);
+            console.log("✅ Session downloaded successfully!");
+        } else {
+            console.error("❌ Session download failed:", err.message);
+        }
     });
 }
 
-const temp = path.join(os.tmpdir(), 'xero_temp');
-if (!fs.existsSync(temp)) fs.mkdirSync(temp);
+// ========== TEMP CLEANER ==========
+const tempDir = path.join(os.tmpdir(), 'xero_temp');
+if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 setInterval(() => {
-    fs.readdir(temp, (_, f) => f.forEach(f => fs.unlink(path.join(temp, f), () => {})));
+    fs.readdir(tempDir, (err, files) => {
+        if (err) return;
+        files.forEach(f => fs.unlink(path.join(tempDir, f), () => {}));
+    });
 }, 5 * 60 * 1000);
 
-// ========== HELPERS ==========
+// ========== HELPER FUNCTIONS ==========
 async function getBuffer(url) {
     try {
         const res = await axios({ url, responseType: 'arraybuffer', timeout: 15000 });
         return res.data;
-    } catch { return null; }
+    } catch (e) {
+        return null;
+    }
 }
-function getAdmins(participants) {
+
+function getGroupAdmins(participants) {
     return participants.filter(p => p.admin).map(p => p.id);
 }
-async function downloadMedia(msg) {
-    const stream = await downloadContentFromMessage(msg, msg.mimetype.split('/')[0]);
+
+async function downloadMediaMessage(msg) {
+    const stream = await downloadContentFromMessage(msg, msg.mimetype?.split('/')[0] || 'image');
     let buffer = Buffer.from([]);
     for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk]);
     return buffer;
 }
+
 async function saveMessage(m) { return true; }
 
-// ========== LOAD PLUGINS (SCAN FOLDER) ==========
+async function AntiDelete(conn, updates) { console.log("🛡️ Anti-delete triggered"); }
+
+// ========== LOAD PLUGINS ==========
 function loadPlugins() {
     const pluginsDir = './plugins';
     if (!fs.existsSync(pluginsDir)) fs.mkdirSync(pluginsDir);
+    
     const files = fs.readdirSync(pluginsDir).filter(f => f.endsWith('.js'));
     console.log(`📦 Found ${files.length} plugins`);
-    for (const f of files) {
+    
+    for (const file of files) {
         try {
-            require(path.join(pluginsDir, f));
-            console.log(`✅ Loaded: ${f}`);
+            require(path.join(pluginsDir, file));
+            console.log(`✅ Loaded: ${file}`);
         } catch (e) {
-            console.log(`❌ Failed: ${f} - ${e.message}`);
+            console.log(`❌ Failed: ${file} - ${e.message}`);
         }
     }
     console.log(`✅ Total commands: ${global.commandsList.length}`);
 }
 
-// ========== MAIN CONNECTION ==========
-let reconnectTimer;
+// ========== MAIN BOT CONNECTION ==========
+let reconnectTimer = null;
+
 async function startBot() {
     console.log("🔌 Connecting to WhatsApp...");
+    
     const { state, saveCreds } = await useMultiFileAuthState('./sessions');
     const { version } = await fetchLatestBaileysVersion();
-    const sock = makeWASocket({
+    
+    const conn = makeWASocket({
         logger: P({ level: 'silent' }),
         printQRInTerminal: false,
         browser: Browsers.macOS('Firefox'),
@@ -98,12 +123,14 @@ async function startBot() {
         version
     });
 
-    sock.ev.on('connection.update', async (update) => {
+    // Connection events
+    conn.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update;
+        
         if (connection === 'close') {
-            const code = lastDisconnect.error?.output?.statusCode;
-            if (code === DisconnectReason.loggedOut) {
-                console.log('❌ Session expired. Update SESSION_ID.');
+            const statusCode = lastDisconnect.error?.output?.statusCode;
+            if (statusCode === DisconnectReason.loggedOut) {
+                console.log('❌ Session expired. Please update SESSION_ID.');
                 return;
             }
             if (reconnectTimer) clearTimeout(reconnectTimer);
@@ -111,103 +138,165 @@ async function startBot() {
                 console.log('🔄 Reconnecting...');
                 startBot();
             }, 5000);
-        } else if (connection === 'open') {
-            console.log('✅ XERO-MD CONNECTED!');
+        } 
+        else if (connection === 'open') {
+            console.log('✅ XERO-MD CONNECTED SUCCESSFULLY!');
             loadPlugins();
+            
+            // Send startup notification to owner
             try {
-                await sock.sendMessage(sock.user.id, { text: '✅ Bot is online. Commands are ready.' });
+                await conn.sendMessage(conn.user.id, {
+                    text: `╭━━━━━━━━━━━━━━━━━━╮
+│   *XERO-MD ONLINE*   
+│   Prefix: ${PREFIX}
+│   Commands: ${global.commandsList.length}
+╰━━━━━━━━━━━━━━━━━━╯
+
+> POWERED BY nyoni-xmd`
+                });
             } catch(e) {}
         }
     });
 
-    sock.ev.on('creds.update', saveCreds);
-    sock.ev.on('messages.upsert', async (msg) => {
+    // Save credentials when updated
+    conn.ev.on('creds.update', saveCreds);
+
+    // Anti-delete
+    conn.ev.on('messages.update', async (updates) => {
+        for (const update of updates) {
+            if (update.update.message === null) {
+                await AntiDelete(conn, updates);
+            }
+        }
+    });
+
+    // ========== MAIN MESSAGE HANDLER ==========
+    conn.ev.on('messages.upsert', async (msg) => {
         let m = msg.messages[0];
         if (!m?.message) return;
-        if (getContentType(m.message) === 'ephemeralMessage') m.message = m.message.ephemeralMessage.message;
-        if (m.message.viewOnceMessageV2) m.message = m.message.viewOnceMessageV2.message;
-        if (config.READ_MESSAGE === 'true') await sock.readMessages([m.key]);
 
+        // Handle ephemeral messages
+        if (getContentType(m.message) === 'ephemeralMessage') {
+            m.message = m.message.ephemeralMessage.message;
+        }
+        
+        // Handle view once messages
+        if (m.message.viewOnceMessageV2) {
+            m.message = m.message.viewOnceMessageV2.message;
+        }
+
+        // Auto read (if enabled)
+        if (config.READ_MESSAGE === 'true') {
+            await conn.readMessages([m.key]);
+        }
+
+        // Auto status actions
         if (m.key?.remoteJid === 'status@broadcast') {
-            if (config.AUTO_STATUS_SEEN === 'true') await sock.readMessages([m.key]);
+            if (config.AUTO_STATUS_SEEN === 'true') await conn.readMessages([m.key]);
             if (config.AUTO_STATUS_REACT === 'true') {
-                const emojis = ['❤️','🔥','💯','✨','⭐'];
-                await sock.sendMessage(m.key.remoteJid, { react: { text: emojis[Math.floor(Math.random()*emojis.length)], key: m.key } }).catch(()=>{});
+                const emojis = ['❤️', '🔥', '💯', '✨', '⭐', '👑', '💎', '🏆'];
+                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                await conn.sendMessage(m.key.remoteJid, {
+                    react: { text: randomEmoji, key: m.key }
+                }).catch(() => {});
             }
             if (config.AUTO_STATUS_REPLY === 'true') {
-                await sock.sendMessage(m.key.participant, { text: config.AUTO_STATUS_MSG || 'Seen your status!' }, { quoted: m }).catch(()=>{});
+                const user = m.key.participant;
+                const replyText = config.AUTO_STATUS_MSG || "Seen your status!";
+                await conn.sendMessage(user, { text: replyText }, { quoted: m }).catch(() => {});
             }
         }
 
         await saveMessage(m);
 
+        // Extract message details
         const type = getContentType(m.message);
         const from = m.key.remoteJid;
-        const sender = m.key.fromMe ? sock.user.id.split(':')[0]+'@s.whatsapp.net' : (m.key.participant || m.key.remoteJid);
+        const sender = m.key.fromMe ? conn.user.id.split(':')[0] + '@s.whatsapp.net' : (m.key.participant || m.key.remoteJid);
         const senderNumber = sender.split('@')[0];
-        const botNumber = sock.user.id.split(':')[0];
+        const botNumber = conn.user.id.split(':')[0];
 
+        // Get message body
         let body = '';
         if (type === 'conversation') body = m.message.conversation;
         else if (type === 'extendedTextMessage') body = m.message.extendedTextMessage.text;
         else if (type === 'imageMessage' && m.message.imageMessage.caption) body = m.message.imageMessage.caption;
         else if (type === 'videoMessage' && m.message.videoMessage.caption) body = m.message.videoMessage.caption;
+        else if (type === 'listResponseMessage') body = m.message.listResponseMessage?.singleSelectReply?.selectedRowId || '';
 
-        const isCmd = body.startsWith(prefix);
-        const command = isCmd ? body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+        const isCmd = body.startsWith(PREFIX);
+        const command = isCmd ? body.slice(PREFIX.length).trim().split(' ')[0].toLowerCase() : '';
         const args = body.trim().split(/ +/).slice(1);
         const q = args.join(' ');
         const isGroup = from.endsWith('@g.us');
-        const isOwner = ownerNumber.includes(senderNumber) || botNumber === senderNumber;
+        const isOwner = OWNER_NUMBERS.includes(senderNumber) || botNumber === senderNumber;
 
+        // Get group metadata if in group
         let groupName = '', participants = [], groupAdmins = [], isBotAdmins = false, isAdmins = false;
         if (isGroup) {
-            const meta = await sock.groupMetadata(from).catch(()=>null);
-            if (meta) {
-                groupName = meta.subject || '';
-                participants = meta.participants || [];
-                groupAdmins = getAdmins(participants);
-                const botJid = await jidNormalizedUser(sock.user.id);
+            const metadata = await conn.groupMetadata(from).catch(() => null);
+            if (metadata) {
+                groupName = metadata.subject || '';
+                participants = metadata.participants || [];
+                groupAdmins = getGroupAdmins(participants);
+                const botJid = await jidNormalizedUser(conn.user.id);
                 isBotAdmins = groupAdmins.includes(botJid);
                 isAdmins = groupAdmins.includes(sender);
             }
         }
 
-        const reply = (text) => sock.sendMessage(from, { text }, { quoted: m });
+        // Reply function
+        const reply = (text) => conn.sendMessage(from, { text }, { quoted: m });
 
+        // Log command
         if (isCmd) {
-            console.log(`📩 Command: ${command} from ${senderNumber}`);
+            console.log(`📩 Command: ${command} from ${senderNumber} (${isGroup ? 'group' : 'dm'})`);
+        }
+
+        // Execute command if exists
+        if (isCmd) {
             const cmd = getCommand(command);
             if (cmd) {
                 try {
-                    await cmd.function(sock, m, { message: m }, {
+                    await cmd.function(conn, m, { message: m }, {
                         from, reply, body, isCmd, command, args, q, text: q,
                         isGroup, sender, senderNumber, botNumber, isOwner,
-                        groupName, participants, groupAdmins, isBotAdmins, isAdmins, prefix
+                        groupName, participants, groupAdmins, isBotAdmins, isAdmins, prefix: PREFIX
                     });
                 } catch (err) {
-                    console.error(err);
+                    console.error("Command error:", err);
                     reply(`❌ Error: ${err.message}`);
                 }
             }
         }
     });
 
-    sock.decodeJid = (jid) => { let d = jidDecode(jid); return d?.user && d?.server ? `${d.user}@${d.server}` : jid; };
-    sock.downloadMediaMessage = downloadMedia;
-    sock.sendImage = async (jid, url, caption, quoted) => {
+    // ========== UTILITY FUNCTIONS FOR PLUGINS ==========
+    conn.decodeJid = (jid) => {
+        let d = jidDecode(jid);
+        return d?.user && d?.server ? `${d.user}@${d.server}` : jid;
+    };
+    
+    conn.downloadMediaMessage = downloadMediaMessage;
+    
+    conn.sendImage = async (jid, url, caption, quoted) => {
         let buf = Buffer.isBuffer(url) ? url : /^https?:\/\//.test(url) ? await getBuffer(url) : fs.existsSync(url) ? fs.readFileSync(url) : null;
-        if (buf) return sock.sendMessage(jid, { image: buf, caption }, { quoted });
+        if (buf) return conn.sendMessage(jid, { image: buf, caption }, { quoted });
         return null;
     };
-    sock.sendText = (jid, text, quoted) => sock.sendMessage(jid, { text }, { quoted });
+    
+    conn.sendText = (jid, text, quoted) => conn.sendMessage(jid, { text }, { quoted });
 }
 
-// ========== WEB SERVER ==========
-app.get('/', (_, res) => res.send('XERO-MD is running'));
-app.listen(port, () => console.log(`🌐 Web server on port ${port}`));
+// ========== WEB SERVER (for health checks) ==========
+app.get('/', (req, res) => res.send('XERO-MD is running!'));
+app.listen(PORT, () => console.log(`🌐 Web server running on port ${PORT}`));
 
+// ========== START BOT ==========
 setTimeout(startBot, 3000);
-process.on('uncaughtException', (e) => console.error('💥 Exception:', e.message));
-process.on('unhandledRejection', (e) => console.error('💥 Rejection:', e));
-console.log('🚀 XERO-MD booting...');
+
+// ========== ERROR HANDLING ==========
+process.on('uncaughtException', (err) => console.error('💥 Uncaught Exception:', err.message));
+process.on('unhandledRejection', (err) => console.error('💥 Unhandled Rejection:', err));
+
+console.log('🚀 XERO-MD booting up...');
