@@ -1,3 +1,8 @@
-const { cmd } = require('../lib/functions');
-const moment = require('moment-timezone');
-cmd({ pattern: "alive", desc: "Check bot status", category: "info", react: "✨", filename: __filename }, async (conn, mek, m, { reply }) => { reply(`✨ XERO-MD is alive!\n⏰ ${moment().tz("Africa/Dar_es_Salaam").format("HH:mm:ss")}\n⚡ Power - Speed - Control`); });
+global.registerCommand({
+    command: "alive",
+    desc: "Check if bot is running",
+    category: "info",
+    function: async (conn, m, store, { reply }) => {
+        reply("✨ XERO-MD is alive and online!\n⚡ Power - Speed - Control");
+    }
+});
