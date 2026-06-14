@@ -10,11 +10,9 @@
     "express": "^4.18.0",
     "megajs": "^1.2.0",
     "pino": "^8.17.2",
-    "qrcode-terminal": "^0.12.0",
     "moment-timezone": "^0.5.45",
     "file-type": "^16.5.4",
-    "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^11.1.0",
-    "wa-sticker-formatter": "^4.4.4"
+    "qrcode-terminal": "^0.12.0"
   }
 }
