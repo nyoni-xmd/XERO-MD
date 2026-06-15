@@ -1,6 +1,7 @@
 {
   "name": "xero-md",
   "version": "3.0.0",
+  "description": "XERO-MD WhatsApp Bot with AI Chatbot",
   "main": "index.js",
   "scripts": { "start": "node index.js" },
   "dependencies": {
