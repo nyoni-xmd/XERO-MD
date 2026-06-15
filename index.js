@@ -1,4 +1,4 @@
-// ======================== XERO-MD INDEX (PLUGIN LOADER) ========================
+// ======================== XERO-MD INDEX (FIXED PLUGIN LOADER) ========================
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, jidNormalizedUser, getContentType, fetchLatestBaileysVersion, Browsers, downloadContentFromMessage, jidDecode } = require('@whiskeysockets/baileys');
 const fs = require('fs');
 const P = require('pino');
@@ -27,7 +27,7 @@ function registerCommand(cmd) {
     if (cmd.alias && Array.isArray(cmd.alias)) {
         cmd.alias.forEach(a => global.aliases.set(a, cmd.command));
     }
-    console.log(`📝 Registered: ${cmd.command}`);
+    console.log(`📝 Registered command: ${cmd.command}`);
 }
 
 function getCommand(name) {
@@ -37,7 +37,7 @@ function getCommand(name) {
 global.registerCommand = registerCommand;
 global.getCommand = getCommand;
 
-// ========== SESSION HANDLING ==========
+// ========== SESSION ==========
 if (!fs.existsSync('./sessions')) fs.mkdirSync('./sessions');
 
 if (!fs.existsSync('./sessions/creds.json') && config.SESSION_ID) {
@@ -48,7 +48,7 @@ if (!fs.existsSync('./sessions/creds.json') && config.SESSION_ID) {
             fs.writeFileSync('./sessions/creds.json', data);
             console.log("✅ Session ready!");
         } else {
-            console.error("❌ Session download failed:", err.message);
+            console.error("❌ Session error:", err.message);
         }
     });
 }
@@ -63,26 +63,40 @@ setInterval(() => {
     });
 }, 5 * 60 * 1000);
 
+// ========== HELPER FUNCTIONS ==========
+async function getBuffer(url) {
+    try {
+        const res = await axios({ url, responseType: 'arraybuffer', timeout: 15000 });
+        return res.data;
+    } catch { return null; }
+}
+
 // ========== LOAD PLUGINS (SOMA FOLDER PLUGINS) ==========
 function loadPlugins() {
-    const pluginsDir = './plugins';
+    const pluginsDir = path.join(__dirname, 'plugins');
+    console.log(`📂 Looking for plugins in: ${pluginsDir}`);
+    
     if (!fs.existsSync(pluginsDir)) {
         fs.mkdirSync(pluginsDir);
         console.log("📁 Created plugins folder");
     }
     
     const files = fs.readdirSync(pluginsDir).filter(f => f.endsWith('.js'));
-    console.log(`📦 Found ${files.length} plugins`);
+    console.log(`📦 Found ${files.length} plugin files`);
     
     for (const file of files) {
         try {
-            require(path.join(pluginsDir, file));
+            const pluginPath = path.join(pluginsDir, file);
+            console.log(`📥 Loading: ${file}`);
+            require(pluginPath);
             console.log(`✅ Loaded: ${file}`);
         } catch (e) {
-            console.log(`❌ Failed: ${file} - ${e.message}`);
+            console.log(`❌ Failed to load ${file}: ${e.message}`);
+            console.log(e.stack);
         }
     }
-    console.log(`✅ Total commands: ${global.commands.size}`);
+    
+    console.log(`✅ Total commands registered: ${global.commands.size}`);
 }
 
 // ========== MAIN BOT ==========
@@ -114,15 +128,24 @@ async function startBot() {
         } else if (connection === 'open') {
             console.log('✅ XERO-MD CONNECTED!');
             loadPlugins();
+            
+            // Send status to owner
             try {
                 await sock.sendMessage(sock.user.id, {
-                    text: `✅ XERO-MD ONLINE\nPrefix: ${PREFIX}\nCommands: ${global.commands.size}`
+                    text: `╭━━━━━━━━━━━━━━━━━━╮
+│   *XERO-MD ONLINE*   
+│   Prefix: ${PREFIX}
+│   Commands: ${global.commands.size}
+╰━━━━━━━━━━━━━━━━━━╯
+
+> POWERED BY nyoni-xmd`
                 });
             } catch(e) {}
         }
     });
 
     sock.ev.on('creds.update', saveCreds);
+    
     sock.ev.on('messages.upsert', async (msg) => {
         let m = msg.messages[0];
         if (!m?.message) return;
@@ -155,22 +178,25 @@ async function startBot() {
         const reply = (text) => sock.sendMessage(from, { text }, { quoted: m });
 
         if (isCmd) {
-            console.log(`📩 Command: ${cmdName} from ${senderNumber}`);
+            console.log(`📩 Command received: "${cmdName}" from ${senderNumber}`);
             const cmd = getCommand(cmdName);
             if (cmd) {
                 try {
+                    console.log(`▶️ Executing: ${cmdName}`);
                     await cmd.function(sock, m, {
                         from, reply, args, q, text: q, isGroup, sender, senderNumber, isOwner, prefix: PREFIX
                     });
                 } catch (e) {
-                    console.error(e);
+                    console.error(`❌ Error in ${cmdName}:`, e);
                     reply(`❌ Error: ${e.message}`);
                 }
+            } else {
+                console.log(`⚠️ Unknown command: ${cmdName}`);
             }
         }
     });
 
-    // Helper functions for plugins
+    // Helper functions
     sock.downloadMedia = async (msg) => {
         const stream = await downloadContentFromMessage(msg, msg.mimetype?.split('/')[0] || 'image');
         let buffer = Buffer.from([]);
@@ -178,12 +204,7 @@ async function startBot() {
         return buffer;
     };
     
-    sock.getBuffer = async (url) => {
-        try {
-            const res = await axios({ url, responseType: 'arraybuffer', timeout: 15000 });
-            return res.data;
-        } catch { return null; }
-    };
+    sock.getBuffer = getBuffer;
     
     sock.getPP = async (jid) => {
         try {
@@ -202,6 +223,6 @@ app.get('/', (req, res) => res.send('XERO-MD Running'));
 app.listen(PORT, () => console.log(`🌐 Server on port ${PORT}`));
 
 setTimeout(startBot, 3000);
-process.on('uncaughtException', (e) => console.error('💥 Error:', e.message));
+process.on('uncaughtException', (e) => console.error('💥 Uncaught:', e.message));
 process.on('unhandledRejection', (e) => console.error('💥 Rejection:', e));
-console.log('🚀 XERO-MD starting...');
+console.log('🚀 XERO-MD starting with plugin system...');
