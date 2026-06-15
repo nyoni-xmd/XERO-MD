@@ -1,4 +1,4 @@
-// ======================== XERO-MD INDEX (COMPLETE) ========================
+// ======================== XERO-MD INDEX (COMPLETE - WITH AUTO TYPING & RECORDING) ========================
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, jidNormalizedUser, getContentType, fetchLatestBaileysVersion, Browsers, downloadContentFromMessage, jidDecode } = require('@whiskeysockets/baileys');
 const fs = require('fs');
 const P = require('pino');
@@ -59,7 +59,13 @@ let adminEventsEnabled = config.ADMIN_ACTION === "true";
 
 // ========== AUTO REACT SETTINGS ==========
 let autoReactEnabled = config.AUTO_REACT === "true";
-const autoReactEmojis = ['😊', '👍', '🔥', '💯', '✨', '⭐', '❤️', '💙', '💚', '💛'];
+const autoReactEmojis = ['😊', '👍', '🔥', '💯', '✨', '⭐', '❤️', '💙', '💚', '💛', '🎉', '👏'];
+
+// ========== AUTO TYPING SETTINGS ==========
+let autoTypingEnabled = config.AUTO_TYPING === "true";
+
+// ========== AUTO RECORDING SETTINGS ==========
+let autoRecordingEnabled = config.AUTO_RECORDING === "true";
 
 // ========== STATUS STORAGE ==========
 let processedStatusIds = new Set();
@@ -146,6 +152,22 @@ function storeMessage(key, message) {
 
 function getStoredMessage(key) {
     return messageStore.get(key);
+}
+
+// ========== AUTO RECORDING FUNCTION ==========
+async function sendRecording(conn, from, duration = 3000) {
+    try {
+        // Generate a simple beep sound (base64 encoded audio)
+        // This creates a short audio beep - you can replace with actual audio URL if needed
+        const audioUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+        await conn.sendMessage(from, { 
+            audio: { url: audioUrl }, 
+            mimetype: 'audio/mp4', 
+            ptt: true 
+        }).catch(() => {});
+    } catch (e) {
+        console.error("Recording error:", e.message);
+    }
 }
 
 // ========== LOAD PLUGINS ==========
@@ -332,6 +354,8 @@ async function startBot() {
 │   Group AI: ${groupChatbotEnabled ? "ON" : "OFF"}
 │   DM AI: ${dmChatbotEnabled ? "ON" : "OFF"}
 │   Anti-Delete: ${antiDeleteEnabled ? "ON" : "OFF"}
+│   Auto Typing: ${autoTypingEnabled ? "ON" : "OFF"}
+│   Auto Recording: ${autoRecordingEnabled ? "ON" : "OFF"}
 ╰━━━━━━━━━━━━━━━━━━╯
 
 > POWERED BY nyoni-xmd`
@@ -402,6 +426,21 @@ async function startBot() {
         const senderNumber = sender.split('@')[0];
         const isGroup = from.endsWith('@g.us');
         const isOwner = OWNER_NUMBERS.includes(senderNumber);
+        
+        // ========== AUTO TYPING ==========
+        if (autoTypingEnabled && !m.key.fromMe && !isGroup) {
+            await sock.sendPresenceUpdate('composing', from).catch(() => {});
+            setTimeout(async () => {
+                await sock.sendPresenceUpdate('paused', from).catch(() => {});
+            }, 3000);
+        }
+        
+        // ========== AUTO RECORDING ==========
+        if (autoRecordingEnabled && !m.key.fromMe && !isGroup) {
+            setTimeout(async () => {
+                await sendRecording(sock, from);
+            }, 2000);
+        }
         
         // ========== AUTO STATUS SEEN/REACT/REPLY ==========
         if (from === 'status@broadcast' && !m.key.fromMe) {
@@ -527,15 +566,9 @@ global.registerCommand({
     function: async (conn, m, { reply, args, isOwner }) => {
         if (!isOwner) return reply("❌ Owner only.");
         const action = args[0]?.toLowerCase();
-        if (action === 'on') {
-            antiDeleteEnabled = true;
-            reply(`✅ Anti-Delete ENABLED!`);
-        } else if (action === 'off') {
-            antiDeleteEnabled = false;
-            reply(`❌ Anti-Delete DISABLED!`);
-        } else {
-            reply(`🛡️ Anti-Delete: ${antiDeleteEnabled ? "ON" : "OFF"}\n.antidel on/off`);
-        }
+        if (action === 'on') { antiDeleteEnabled = true; reply("✅ Anti-Delete ENABLED!"); }
+        else if (action === 'off') { antiDeleteEnabled = false; reply("❌ Anti-Delete DISABLED!"); }
+        else reply(`🛡️ Anti-Delete: ${antiDeleteEnabled ? "ON" : "OFF"}\n.antidel on/off`);
     }
 });
 
@@ -553,6 +586,36 @@ global.registerCommand({
         } else {
             reply(`📍 Current path: ${antiDeletePath}\n.antidelpath inbox/same`);
         }
+    }
+});
+
+// Auto Typing Command
+global.registerCommand({
+    command: "autotyping",
+    alias: ["typing"],
+    desc: "Enable/disable auto typing",
+    category: "owner",
+    function: async (conn, m, { reply, args, isOwner }) => {
+        if (!isOwner) return reply("❌ Owner only.");
+        const action = args[0]?.toLowerCase();
+        if (action === 'on') { autoTypingEnabled = true; reply("✅ Auto Typing ENABLED!"); }
+        else if (action === 'off') { autoTypingEnabled = false; reply("❌ Auto Typing DISABLED!"); }
+        else reply(`⌨️ Auto Typing: ${autoTypingEnabled ? "ON" : "OFF"}\n.autotyping on/off`);
+    }
+});
+
+// Auto Recording Command
+global.registerCommand({
+    command: "autorecording",
+    alias: ["recording", "autorecord"],
+    desc: "Enable/disable auto recording",
+    category: "owner",
+    function: async (conn, m, { reply, args, isOwner }) => {
+        if (!isOwner) return reply("❌ Owner only.");
+        const action = args[0]?.toLowerCase();
+        if (action === 'on') { autoRecordingEnabled = true; reply("✅ Auto Recording ENABLED!"); }
+        else if (action === 'off') { autoRecordingEnabled = false; reply("❌ Auto Recording DISABLED!"); }
+        else reply(`🎙️ Auto Recording: ${autoRecordingEnabled ? "ON" : "OFF"}\n.autorecording on/off`);
     }
 });
 
@@ -729,7 +792,7 @@ global.registerCommand({
         const menu = `╭┈┈❍ *XERO-MD* ❍
 ┊• 📋 *MAIN MENU*
 ┊•
-┊• 🔧 *Commands* :
+┊• 🔧 *Basic Commands* :
 ┊•   ${prefix}ping - Check bot
 ┊•   ${prefix}menu - This menu
 ┊•   ${prefix}alive - Bot status
@@ -752,6 +815,12 @@ global.registerCommand({
 ┊•
 ┊• 😊 *Auto React* :
 ┊•   ${prefix}autoreact on/off
+┊•
+┊• ⌨️ *Auto Typing* :
+┊•   ${prefix}autotyping on/off
+┊•
+┊• 🎙️ *Auto Recording* :
+┊•   ${prefix}autorecording on/off
 ┊•
 ┊• 👥 *Group Settings* :
 ┊•   ${prefix}welcome on/off
@@ -780,6 +849,8 @@ global.registerCommand({
 ┊• ⏱️ *Uptime* : ${hours}h ${minutes}m ${seconds}s
 ┊• 🤖 *Group AI* : ${groupChatbotEnabled ? "ON" : "OFF"}
 ┊• 🛡️ *Anti-Delete* : ${antiDeleteEnabled ? "ON" : "OFF"}
+┊• ⌨️ *Auto Typing* : ${autoTypingEnabled ? "ON" : "OFF"}
+┊• 🎙️ *Auto Recording* : ${autoRecordingEnabled ? "ON" : "OFF"}
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
