@@ -1,4 +1,4 @@
-// plugins/menu.js - AUTO UPDATE MENU (Inaonyesha commands zote kwa category)
+// plugins/menu.js - AUTO UPDATE MENU
 const config = require('../config');
 
 const smallCaps = {
@@ -9,6 +9,21 @@ const smallCaps = {
 };
 const toSmallCaps = (text) => text.split('').map(ch => smallCaps[ch.toUpperCase()] || ch).join('');
 
+// ✅ FIX: Ensure global.commandsList always exists before any plugin loads
+if (!global.commandsList) global.commandsList = [];
+
+// ✅ FIX: Wrap registerCommand to auto-push every command into commandsList
+const _originalRegister = global.registerCommand.bind(global);
+global.registerCommand = (cmdObj) => {
+    // Push to commandsList if not already there (avoid duplicates on hot-reload)
+    const exists = global.commandsList.some(c => c.command === cmdObj.command);
+    if (!exists) {
+        global.commandsList.push(cmdObj);
+    }
+    // Still call the original so the command actually works
+    return _originalRegister(cmdObj);
+};
+
 global.registerCommand({
     command: "menu",
     alias: ["help", "cmd"],
@@ -16,15 +31,35 @@ global.registerCommand({
     category: "menu",
     function: async (conn, m, { from, reply, prefix, sender }) => {
         try {
-            const allCommands = global.commandsList || [];
+            // ✅ FIX: Fallback — also scan global.commands if commandsList is still short
+            let allCommands = global.commandsList || [];
+
+            // Some bots store commands in global.commands as a Map or Object
+            if (global.commands) {
+                if (global.commands instanceof Map) {
+                    for (let [, cmd] of global.commands) {
+                        if (!allCommands.some(c => c.command === cmd.command)) {
+                            allCommands.push(cmd);
+                        }
+                    }
+                } else if (typeof global.commands === 'object') {
+                    for (let key in global.commands) {
+                        const cmd = global.commands[key];
+                        if (cmd && !allCommands.some(c => c.command === cmd.command)) {
+                            allCommands.push(cmd);
+                        }
+                    }
+                }
+            }
+
             const totalCommands = allCommands.length;
-            
+
             const uptime = () => {
                 let sec = process.uptime();
                 let h = Math.floor(sec / 3600);
-                let m = Math.floor((sec % 3600) / 60);
+                let min = Math.floor((sec % 3600) / 60);
                 let s = Math.floor(sec % 60);
-                return `${h}h ${m}m ${s}s`;
+                return `${h}h ${min}m ${s}s`;
             };
 
             let senderNumber = "User";
@@ -48,18 +83,22 @@ global.registerCommand({
 
 `;
 
-            // Group commands by category
+            // Group by category
             let categoryMap = {};
             for (let cmd of allCommands) {
-                let cat = cmd.category || "general";
+                // ✅ FIX: Skip entries with no command name (avoids blank lines)
+                if (!cmd || !cmd.command) continue;
+                let cat = (cmd.category || "general").toLowerCase().trim();
                 if (!categoryMap[cat]) categoryMap[cat] = [];
-                categoryMap[cat].push(cmd);
+                // ✅ FIX: Skip duplicate command names within same category
+                if (!categoryMap[cat].some(c => c.command === cmd.command)) {
+                    categoryMap[cat].push(cmd);
+                }
             }
 
-            // Category order (unaweza kuongeza category mpya hapa)
             const categoryOrder = [
-                "menu", "info", "tools", "group", "convert", "download", 
-                "fun", "game", "logo", "owner", "settings", "sticker", 
+                "menu", "info", "tools", "group", "convert", "download",
+                "fun", "game", "logo", "owner", "settings", "sticker",
                 "utility", "general"
             ];
 
@@ -72,13 +111,11 @@ global.registerCommand({
             });
 
             for (let cat of sortedCategories) {
-                if (categoryMap[cat].length === 0) continue;
+                if (!categoryMap[cat] || categoryMap[cat].length === 0) continue;
                 menuText += `\n*╭─ 「 \`${cat.toUpperCase()} MENU\`* 」`;
                 const cmds = categoryMap[cat].sort((a, b) => (a.command || "").localeCompare(b.command || ""));
                 for (let c of cmds) {
-                    const cmdName = c.command;
-                    if (!cmdName) continue;
-                    menuText += `\n*│⤷ ${prefix}${toSmallCaps(cmdName)}*`;
+                    menuText += `\n*│⤷ ${prefix}${toSmallCaps(c.command)}*`;
                 }
                 menuText += `\n*╰──────────────⭑━➤*`;
             }
@@ -101,9 +138,10 @@ global.registerCommand({
                     }
                 }
             }, { quoted: m });
+
         } catch (e) {
-            console.error(e);
-            reply(`❌ Error: ${e.message}`);
+            console.error('[MENU ERROR]', e);
+            reply(`❌ Menu error: ${e.message}`);
         }
     }
 });
