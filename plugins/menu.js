@@ -1,3 +1,14 @@
+// plugins/menu.js - AUTO UPDATE MENU (Inaonyesha commands zote kwa category)
+const config = require('../config');
+
+const smallCaps = {
+    "A": "ᴀ", "B": "ʙ", "C": "ᴄ", "D": "ᴅ", "E": "ᴇ", "F": "ꜰ", "G": "ɢ", "H": "ʜ",
+    "I": "ɪ", "J": "ᴊ", "K": "ᴋ", "L": "ʟ", "M": "ᴍ", "N": "ɴ", "O": "ᴏ", "P": "ᴘ",
+    "Q": "ǫ", "R": "ʀ", "S": "s", "T": "ᴛ", "U": "ᴜ", "V": "ᴠ", "W": "ᴡ", "X": "x",
+    "Y": "ʏ", "Z": "ᴢ"
+};
+const toSmallCaps = (text) => text.split('').map(ch => smallCaps[ch.toUpperCase()] || ch).join('');
+
 global.registerCommand({
     command: "menu",
     alias: ["help", "cmd"],
@@ -26,7 +37,7 @@ global.registerCommand({
             let menuText = `*╭━━*『 XERO-MD 』
 *┃* ❃ *ᴜsᴇʀ* : @${senderNumber}
 *┃* ❃ *ʀᴜɴᴛɪᴍᴇ* : ${uptime()}
-*┃* ❃ *ᴍᴏᴅᴇ* : public
+*┃* ❃ *ᴍᴏᴅᴇ* : ${config.MODE || 'public'}
 *┃* ❃ *ᴘʀᴇғɪx* : [${prefix}]
 *┃* ❃ *ᴩʟᴜɢɪɴ* : ${totalCommands}
 *┃* ❃ *ᴅᴇᴠ* : *nyoni-xmd*
@@ -35,22 +46,49 @@ global.registerCommand({
 *┃* ❃ *ᴠᴇʀsɪᴏɴ* : 3.0.0
 *╰────────────────❍*
 
-*╭─ 「 MAIN MENU 」*
-*│⤷ ${prefix}menu - Show menu*
-*│⤷ ${prefix}ping - Check bot*
-*│⤷ ${prefix}alive - Bot status*
-*│⤷ ${prefix}owner - Owner info*
-*│⤷ ${prefix}runtime - Bot uptime*
-*│⤷ ${prefix}getpp - Get profile pic*
-*│⤷ ${prefix}vv - Open view once*
-*╰──────────────⭑━➤*
+`;
 
-> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ɴʏᴏɴɪ-xᴍᴅ*
+            // Group commands by category
+            let categoryMap = {};
+            for (let cmd of allCommands) {
+                let cat = cmd.category || "general";
+                if (!categoryMap[cat]) categoryMap[cat] = [];
+                categoryMap[cat].push(cmd);
+            }
+
+            // Category order (unaweza kuongeza category mpya hapa)
+            const categoryOrder = [
+                "menu", "info", "tools", "group", "convert", "download", 
+                "fun", "game", "logo", "owner", "settings", "sticker", 
+                "utility", "general"
+            ];
+
+            const sortedCategories = Object.keys(categoryMap).sort((a, b) => {
+                let ia = categoryOrder.indexOf(a);
+                let ib = categoryOrder.indexOf(b);
+                if (ia === -1) ia = 999;
+                if (ib === -1) ib = 999;
+                return ia - ib;
+            });
+
+            for (let cat of sortedCategories) {
+                if (categoryMap[cat].length === 0) continue;
+                menuText += `\n*╭─ 「 \`${cat.toUpperCase()} MENU\`* 」`;
+                const cmds = categoryMap[cat].sort((a, b) => (a.command || "").localeCompare(b.command || ""));
+                for (let c of cmds) {
+                    const cmdName = c.command;
+                    if (!cmdName) continue;
+                    menuText += `\n*│⤷ ${prefix}${toSmallCaps(cmdName)}*`;
+                }
+                menuText += `\n*╰──────────────⭑━➤*`;
+            }
+
+            menuText += `\n\n> *ᴘᴏᴡᴇʀᴇᴅ ʙʏ ɴʏᴏɴɪ-xᴍᴅ*
 ⚡ *ᴘᴏᴡᴇʀ - sᴘᴇᴇᴅ - ᴄᴏɴᴛʀᴏʟ*
 🚀 *ʙᴇʏᴏɴᴅ ʟɪᴍɪᴛs*`;
 
             await conn.sendMessage(from, {
-                image: { url: 'https://files.catbox.moe/gyaka2.png' },
+                image: { url: config.MENU_IMAGE_URL || "https://files.catbox.moe/gyaka2.png" },
                 caption: menuText,
                 contextInfo: {
                     mentionedJid: [`${senderNumber}@s.whatsapp.net`],
