@@ -1,4 +1,3 @@
-// plugins/getpp.js
 global.registerCommand({
     command: "getpp",
     alias: ["pp"],
@@ -12,7 +11,11 @@ global.registerCommand({
             let ppUrl = await conn.profilePictureUrl(target, 'image');
             await conn.sendMessage(from, {
                 image: { url: ppUrl },
-                caption: `📸 Profile picture of @${target.split('@')[0]}`,
+                caption: `╭┈┈❍ *XERO-MD* ❍
+┊• *Profile picture of* @${target.split('@')[0]}
+╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
+
+> POWERED BY nyoni-xmd`,
                 mentions: [target]
             }, { quoted: m });
         } catch {
