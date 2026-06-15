@@ -5,7 +5,7 @@ const path = require('path');
 const AdmZip = require("adm-zip");
 const { exec } = require('child_process');
 
-// XERO-MD GitHub repo (SAHIHI)
+// XERO-MD GitHub repo
 const REPO_OWNER = "nyoni-xmd";
 const REPO_NAME = "XERO-MD";
 const REPO_URL = `https://github.com/nyoni-xmd/xero-md`;
@@ -22,7 +22,6 @@ function copyFolderSync(source, target, preserveFiles = ['config.js', 'app.json'
         const srcPath = path.join(source, item);
         const destPath = path.join(target, item);
 
-        // Skip preserving files
         if (preserveFiles.includes(item)) {
             console.log(`📁 Preserved: ${item}`);
             continue;
@@ -55,6 +54,7 @@ function saveCommitHash(hash) {
     } catch (e) {}
 }
 
+// ==================== UPDATE COMMAND ====================
 global.registerCommand({
     command: "update",
     alias: ["upgrade", "sync", "gitpull"],
@@ -63,8 +63,8 @@ global.registerCommand({
     function: async (conn, m, { from, reply, isOwner }) => {
         if (!isOwner) {
             return reply(`╭┈┈❍ *XERO-MD* ❍
-┊• *❌ Access Denied!*
-┊• *Only bot owner can use this command*
+┊• ❌ Access Denied!
+┊• Only bot owner can use this command
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
@@ -72,7 +72,7 @@ global.registerCommand({
 
         try {
             await reply(`╭┈┈❍ *XERO-MD* ❍
-┊• 🔍 *Checking for updates...*
+┊• 🔍 Checking for updates...
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
@@ -88,25 +88,25 @@ global.registerCommand({
 
             if (currentHash === latestCommitHash) {
                 return reply(`╭┈┈❍ *XERO-MD* ❍
-┊• ✅ *Bot is already up to date!*
+┊• ✅ Bot is already up to date!
 ┊•
-┊• 📦 *Current version* : ${latestCommitHash.substring(0, 7)}
-┊• 📅 *Last update* : ${latestCommitDate}
-┊• 💬 *Message* : ${latestCommitMsg}
+┊• 📦 Current version : ${latestCommitHash.substring(0, 7)}
+┊• 📅 Last update : ${latestCommitDate}
+┊• 💬 Message : ${latestCommitMsg}
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
             }
 
             await reply(`╭┈┈❍ *XERO-MD* ❍
-┊• 🚀 *Update available!*
+┊• 🚀 Update available!
 ┊•
-┊• 📦 *Current* : ${currentHash ? currentHash.substring(0, 7) : 'Unknown'}
-┊• 📦 *Latest* : ${latestCommitHash.substring(0, 7)}
-┊• 💬 *Message* : ${latestCommitMsg}
-┊• 📅 *Date* : ${latestCommitDate}
+┊• 📦 Current : ${currentHash ? currentHash.substring(0, 7) : 'Unknown'}
+┊• 📦 Latest : ${latestCommitHash.substring(0, 7)}
+┊• 💬 Message : ${latestCommitMsg}
+┊• 📅 Date : ${latestCommitDate}
 ┊•
-┊• ⏳ *Downloading update...*
+┊• ⏳ Downloading update...
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
@@ -118,7 +118,7 @@ global.registerCommand({
             fs.writeFileSync(zipPath, zipData);
 
             await reply(`╭┈┈❍ *XERO-MD* ❍
-┊• 📦 *Extracting update...*
+┊• 📦 Extracting update...
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
@@ -128,7 +128,7 @@ global.registerCommand({
             const zip = new AdmZip(zipPath);
             zip.extractAllTo(extractPath, true);
 
-            // Copy files (preserve config.js and app.json)
+            // Copy files (preserve important files)
             const sourcePath = path.join(extractPath, `${REPO_NAME}-main`);
             const destinationPath = path.join(__dirname, '..');
             
@@ -142,10 +142,10 @@ global.registerCommand({
             fs.rmSync(extractPath, { recursive: true, force: true });
 
             await reply(`╭┈┈❍ *XERO-MD* ❍
-┊• ✅ *Update complete!*
+┊• ✅ Update complete!
 ┊•
-┊• 📦 *New version* : ${latestCommitHash.substring(0, 7)}
-┊• 🔄 *Restarting bot...*
+┊• 📦 New version : ${latestCommitHash.substring(0, 7)}
+┊• 🔄 Restarting bot...
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
@@ -158,11 +158,11 @@ global.registerCommand({
         } catch (error) {
             console.error("Update error:", error);
             reply(`╭┈┈❍ *XERO-MD* ❍
-┊• ❌ *Update failed!*
+┊• ❌ Update failed!
 ┊•
-┊• 🔧 *Error* : ${error.message}
+┊• 🔧 Error : ${error.message}
 ┊•
-┊• 📝 *Try manual update from* : ${REPO_URL}
+┊• 📝 Try manual update from : ${REPO_URL}
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
@@ -170,39 +170,38 @@ global.registerCommand({
     }
 });
 
-// Check version command
+// ==================== VERSION COMMAND ====================
 global.registerCommand({
     command: "version",
     alias: ["ver", "about"],
     desc: "Show bot version information",
     category: "info",
-    function: async (conn, m, { from, reply }) => {
+    function: async (conn, m, { reply }) => {
         try {
             const currentHash = getCurrentCommitHash();
             
-            // Try to get latest version info
             let latestInfo = "";
             try {
                 const { data: commitData } = await axios.get(API_URL, { timeout: 5000 });
                 const latestHash = commitData.sha.substring(0, 7);
                 const isUpToDate = currentHash === commitData.sha;
-                latestInfo = `┊• 📦 *Latest* : ${latestHash}
-┊• 🟢 *Status* : ${isUpToDate ? '✅ Up to date' : '⚠️ Update available'}`;
+                latestInfo = `┊• 📦 Latest : ${latestHash}
+┊• 🟢 Status : ${isUpToDate ? '✅ Up to date' : '⚠️ Update available'}`;
             } catch (e) {
-                latestInfo = `┊• 📦 *Latest* : Unable to check`;
+                latestInfo = `┊• 📦 Latest : Unable to check`;
             }
 
             const verMsg = `╭┈┈❍ *XERO-MD* ❍
-┊• 🤖 *Bot* : XERO-MD
-┊• 👨‍💻 *Developer* : nyoni-xmd
-┊• 📞 *Number 1* : +255763111390
-┊• 📞 *Number 2* : +255610209120
-┊• 📦 *Version* : 3.0.0
-┊• 🔢 *Commit* : ${currentHash ? currentHash.substring(0, 7) : 'Unknown'}
+┊• 🤖 Bot : XERO-MD
+┊• 👨‍💻 Developer : nyoni-xmd
+┊• 📞 Number 1 : +255763111390
+┊• 📞 Number 2 : +255610209120
+┊• 📦 Version : 3.0.0
+┊• 🔢 Commit : ${currentHash ? currentHash.substring(0, 7) : 'Unknown'}
 ${latestInfo}
 ┊•
-┊• ⚡ *Power - Speed - Control*
-┊• 🚀 *Beyond Limits*
+┊• ⚡ Power - Speed - Control
+┊• 🚀 Beyond Limits
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`;
