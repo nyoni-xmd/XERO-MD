@@ -1,4 +1,4 @@
-// ======================== XERO-MD INDEX (FIXED PLUGIN LOADER) ========================
+// ======================== XERO-MD INDEX (WITH CHATBOT) ========================
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, jidNormalizedUser, getContentType, fetchLatestBaileysVersion, Browsers, downloadContentFromMessage, jidDecode } = require('@whiskeysockets/baileys');
 const fs = require('fs');
 const P = require('pino');
@@ -8,6 +8,7 @@ const express = require('express');
 const path = require('path');
 const axios = require('axios');
 const os = require('os');
+const fetch = require('node-fetch');
 
 // ========== FIXED PREFIX ==========
 const PREFIX = ".";
@@ -36,6 +37,10 @@ function getCommand(name) {
 
 global.registerCommand = registerCommand;
 global.getCommand = getCommand;
+
+// ========== CHATBOT SETTINGS ==========
+let groupChatbotEnabled = true;
+let dmChatbotEnabled = false;
 
 // ========== SESSION ==========
 if (!fs.existsSync('./sessions')) fs.mkdirSync('./sessions');
@@ -71,7 +76,45 @@ async function getBuffer(url) {
     } catch { return null; }
 }
 
-// ========== LOAD PLUGINS (SOMA FOLDER PLUGINS) ==========
+// ========== CHATBOT FUNCTION ==========
+async function getAIResponse(message) {
+    try {
+        // Custom responses for specific keywords
+        const text = message.toLowerCase();
+        
+        if (text.includes("wewe ni nani") || text.includes("jina lako") || text.includes("who are you")) {
+            return "Mimi naitwa *XERO-MD*, bot yako msaidizi hapa! 🤖\nNiko hapa kukusaidia na maswali yako.";
+        }
+        else if (text.includes("namba ya mwenye boti") || text.includes("owner number")) {
+            return "📞 *Namba za Owner:*\n• +255763111390\n• +255610209120";
+        }
+        else if (text.includes("developer") || text.includes("dev") || text.includes("creator")) {
+            return "👨‍💻 *Developer:* nyoni-xmd\nBot yangu inaitwa XERO-MD.";
+        }
+        else if (text.includes("thanks") || text.includes("asante") || text.includes("thank you")) {
+            return "Karibu sana! 😊 Niko hapa kukusaidia wakati wote.";
+        }
+        else if (text.includes("hello") || text.includes("hujambo") || text.includes("hi")) {
+            return "Hujambo! Habari yako? 👋\nNinakusaidiaje leo?";
+        }
+        
+        // API call for other messages
+        const apiUrl = `https://apis.davidcyriltech.my.id/ai/chatbot?query=${encodeURIComponent(message)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        if (data.status === 200 || data.success || data.result) {
+            return data.result || data.message || data.response;
+        }
+        
+        return "Samahani, nina tatizo la kiufundi. Jaribu tena baadaye. 🛠️";
+    } catch (error) {
+        console.error("AI Response Error:", error);
+        return "📡 Nina shida ya kufikia server. Jaribu tena baada ya dakika chache.";
+    }
+}
+
+// ========== LOAD PLUGINS ==========
 function loadPlugins() {
     const pluginsDir = path.join(__dirname, 'plugins');
     console.log(`📂 Looking for plugins in: ${pluginsDir}`);
@@ -92,7 +135,6 @@ function loadPlugins() {
             console.log(`✅ Loaded: ${file}`);
         } catch (e) {
             console.log(`❌ Failed to load ${file}: ${e.message}`);
-            console.log(e.stack);
         }
     }
     
@@ -129,13 +171,13 @@ async function startBot() {
             console.log('✅ XERO-MD CONNECTED!');
             loadPlugins();
             
-            // Send status to owner
             try {
                 await sock.sendMessage(sock.user.id, {
                     text: `╭━━━━━━━━━━━━━━━━━━╮
 │   *XERO-MD ONLINE*   
 │   Prefix: ${PREFIX}
 │   Commands: ${global.commands.size}
+│   AI Chatbot: ${groupChatbotEnabled ? "ON" : "OFF"}
 ╰━━━━━━━━━━━━━━━━━━╯
 
 > POWERED BY nyoni-xmd`
@@ -146,6 +188,7 @@ async function startBot() {
 
     sock.ev.on('creds.update', saveCreds);
     
+    // ========== MESSAGE HANDLER (WITH CHATBOT) ==========
     sock.ev.on('messages.upsert', async (msg) => {
         let m = msg.messages[0];
         if (!m?.message) return;
@@ -177,12 +220,53 @@ async function startBot() {
 
         const reply = (text) => sock.sendMessage(from, { text }, { quoted: m });
 
+        // ========== CHATBOT RESPONSE (for non-command messages) ==========
+        if (!isCmd && !m.key.fromMe && body && body.length > 0 && body.length < 500) {
+            let shouldReply = false;
+            
+            // Group chatbot
+            if (isGroup && groupChatbotEnabled) {
+                shouldReply = true;
+            }
+            
+            // DM chatbot (optional)
+            if (!isGroup && dmChatbotEnabled) {
+                shouldReply = true;
+            }
+            
+            if (shouldReply) {
+                try {
+                    await sock.sendPresenceUpdate('composing', from);
+                    const aiReply = await getAIResponse(body);
+                    
+                    await sock.sendMessage(from, {
+                        text: `╭┈┈❍ *XERO-MD AI* ❍
+┊• 🤖 ${aiReply}
+╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
+
+> POWERED BY nyoni-xmd`,
+                        contextInfo: {
+                            forwardingScore: 999,
+                            isForwarded: true,
+                            forwardedNewsletterMessageInfo: {
+                                newsletterJid: '120363399470975987@newsletter',
+                                newsletterName: 'XERO-MD',
+                                serverMessageId: 143
+                            }
+                        }
+                    }, { quoted: m });
+                } catch (aiError) {
+                    console.error("AI Error:", aiError);
+                }
+            }
+        }
+
+        // ========== COMMAND EXECUTION ==========
         if (isCmd) {
-            console.log(`📩 Command received: "${cmdName}" from ${senderNumber}`);
+            console.log(`📩 Command: "${cmdName}" from ${senderNumber}`);
             const cmd = getCommand(cmdName);
             if (cmd) {
                 try {
-                    console.log(`▶️ Executing: ${cmdName}`);
                     await cmd.function(sock, m, {
                         from, reply, args, q, text: q, isGroup, sender, senderNumber, isOwner, prefix: PREFIX
                     });
@@ -190,8 +274,6 @@ async function startBot() {
                     console.error(`❌ Error in ${cmdName}:`, e);
                     reply(`❌ Error: ${e.message}`);
                 }
-            } else {
-                console.log(`⚠️ Unknown command: ${cmdName}`);
             }
         }
     });
@@ -218,6 +300,50 @@ async function startBot() {
     };
 }
 
+// ========== CHATBOT TOGGLE COMMANDS (Built-in) ==========
+
+// Toggle Group Chatbot
+global.registerCommand({
+    command: "groupai",
+    alias: ["gai", "aigroup"],
+    desc: "Enable or disable AI chatbot in groups",
+    category: "owner",
+    function: async (conn, m, { from, reply, args, isOwner }) => {
+        if (!isOwner) return reply("❌ Owner only.");
+        const action = args[0]?.toLowerCase();
+        if (action === 'on') {
+            groupChatbotEnabled = true;
+            reply(`✅ *Group AI Chatbot Activated!*\nNow I will reply to messages in groups.`);
+        } else if (action === 'off') {
+            groupChatbotEnabled = false;
+            reply(`❌ *Group AI Chatbot Deactivated!*\nI will no longer reply in groups.`);
+        } else {
+            reply(`🤖 *Group AI Status:* ${groupChatbotEnabled ? "ON" : "OFF"}\n\n.gai on - Enable\n.gai off - Disable`);
+        }
+    }
+});
+
+// Toggle DM Chatbot
+global.registerCommand({
+    command: "dmai",
+    alias: ["dmaibot", "privacyai"],
+    desc: "Enable or disable AI chatbot in private messages",
+    category: "owner",
+    function: async (conn, m, { from, reply, args, isOwner }) => {
+        if (!isOwner) return reply("❌ Owner only.");
+        const action = args[0]?.toLowerCase();
+        if (action === 'on') {
+            dmChatbotEnabled = true;
+            reply(`✅ *DM AI Chatbot Activated!*\nNow I will reply to your private messages.`);
+        } else if (action === 'off') {
+            dmChatbotEnabled = false;
+            reply(`❌ *DM AI Chatbot Deactivated!*\nI will no longer reply in private chat.`);
+        } else {
+            reply(`🤖 *DM AI Status:* ${dmChatbotEnabled ? "ON" : "OFF"}\n\n.dmai on - Enable\n.dmai off - Disable`);
+        }
+    }
+});
+
 // ========== WEB SERVER ==========
 app.get('/', (req, res) => res.send('XERO-MD Running'));
 app.listen(PORT, () => console.log(`🌐 Server on port ${PORT}`));
@@ -225,4 +351,4 @@ app.listen(PORT, () => console.log(`🌐 Server on port ${PORT}`));
 setTimeout(startBot, 3000);
 process.on('uncaughtException', (e) => console.error('💥 Uncaught:', e.message));
 process.on('unhandledRejection', (e) => console.error('💥 Rejection:', e));
-console.log('🚀 XERO-MD starting with plugin system...');
+console.log('🚀 XERO-MD starting with plugin system & AI Chatbot...');
