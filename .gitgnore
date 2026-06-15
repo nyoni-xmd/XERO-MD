@@ -1,0 +1,57 @@
+# XERO-MD .gitignore
+
+# Dependency directories
+node_modules/
+package-lock.json
+yarn.lock
+
+# Session files (credentials) – DO NOT SHARE
+sessions/
+creds.json
+
+# Environment config
+config.env
+.env
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+temp*/
+tmp*/
+cache-temp/
+xero_temp/
+*.tmp
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Heroku files
+.dyno/
+.heroku/
+
+# PM2 logs
+.pm2/
+
+# Backup files
+*.bak
+*.old
+*.zip
+*.rar
+*.7z
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
