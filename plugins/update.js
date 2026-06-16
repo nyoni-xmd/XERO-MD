@@ -1,4 +1,4 @@
-// plugins/update.js - XERO-MD Auto Update Plugin
+// plugins/update.js - XERO-MD Auto Update Plugin (FULL FIXED)
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
@@ -12,7 +12,7 @@ const REPO_URL = `https://github.com/nyoni-xmd/xero-md`;
 const API_URL = `https://api.github.com/repos/nyoni-xmd/xero-md/commits/main`;
 
 // Helper function to copy folders while preserving important files
-function copyFolderSync(source, target, preserveFiles = ['config.js', 'app.json', 'config.env', 'sessions']) {
+function copyFolderSync(source, target, preserveFiles = ['config.js', 'app.json', 'config.env', 'sessions', '.env']) {
     if (!fs.existsSync(target)) {
         fs.mkdirSync(target, { recursive: true });
     }
@@ -22,6 +22,7 @@ function copyFolderSync(source, target, preserveFiles = ['config.js', 'app.json'
         const srcPath = path.join(source, item);
         const destPath = path.join(target, item);
 
+        // Skip preserving files
         if (preserveFiles.includes(item)) {
             console.log(`📁 Preserved: ${item}`);
             continue;
@@ -86,7 +87,18 @@ global.registerCommand({
             // Get current commit hash
             const currentHash = getCurrentCommitHash();
 
-            if (currentHash === latestCommitHash) {
+            // If no hash file exists, assume update is needed
+            if (!currentHash) {
+                await reply(`╭┈┈❍ *XERO-MD* ❍
+┊• 📦 First time update check!
+┊• Latest version: ${latestCommitHash.substring(0, 7)}
+┊• 💬 ${latestCommitMsg}
+┊•
+┊• ⏳ Downloading update...
+╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
+
+> POWERED BY nyoni-xmd`);
+            } else if (currentHash === latestCommitHash) {
                 return reply(`╭┈┈❍ *XERO-MD* ❍
 ┊• ✅ Bot is already up to date!
 ┊•
@@ -96,9 +108,8 @@ global.registerCommand({
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
-            }
-
-            await reply(`╭┈┈❍ *XERO-MD* ❍
+            } else {
+                await reply(`╭┈┈❍ *XERO-MD* ❍
 ┊• 🚀 Update available!
 ┊•
 ┊• 📦 Current : ${currentHash ? currentHash.substring(0, 7) : 'Unknown'}
@@ -110,6 +121,7 @@ global.registerCommand({
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
+            }
 
             // Download latest code as zip
             const zipPath = path.join(__dirname, "latest.zip");
@@ -132,7 +144,7 @@ global.registerCommand({
             const sourcePath = path.join(extractPath, `${REPO_NAME}-main`);
             const destinationPath = path.join(__dirname, '..');
             
-            copyFolderSync(sourcePath, destinationPath, ['config.js', 'app.json', 'config.env', 'sessions']);
+            copyFolderSync(sourcePath, destinationPath, ['config.js', 'app.json', 'config.env', 'sessions', '.env']);
 
             // Save new commit hash
             saveCommitHash(latestCommitHash);
@@ -150,7 +162,7 @@ global.registerCommand({
 
 > POWERED BY nyoni-xmd`);
 
-            // Restart bot
+            // Restart bot (Heroku / PM2 / Node)
             setTimeout(() => {
                 process.exit(0);
             }, 2000);
@@ -173,7 +185,7 @@ global.registerCommand({
 // ==================== VERSION COMMAND ====================
 global.registerCommand({
     command: "version",
-    alias: ["ver", "about"],
+    alias: ["ver", "about", "v"],
     desc: "Show bot version information",
     category: "info",
     function: async (conn, m, { reply }) => {
@@ -181,10 +193,13 @@ global.registerCommand({
             const currentHash = getCurrentCommitHash();
             
             let latestInfo = "";
+            let latestHash = "";
+            let isUpToDate = false;
+            
             try {
                 const { data: commitData } = await axios.get(API_URL, { timeout: 5000 });
-                const latestHash = commitData.sha.substring(0, 7);
-                const isUpToDate = currentHash === commitData.sha;
+                latestHash = commitData.sha.substring(0, 7);
+                isUpToDate = currentHash === commitData.sha;
                 latestInfo = `┊• 📦 Latest : ${latestHash}
 ┊• 🟢 Status : ${isUpToDate ? '✅ Up to date' : '⚠️ Update available'}`;
             } catch (e) {
@@ -209,6 +224,84 @@ ${latestInfo}
             await reply(verMsg);
         } catch (error) {
             reply(`❌ Error: ${error.message}`);
+        }
+    }
+});
+
+// ==================== FORCE UPDATE COMMAND ====================
+global.registerCommand({
+    command: "forceupdate",
+    alias: ["fupdate", "hardupdate"],
+    desc: "Force update XERO-MD bot (ignore current version)",
+    category: "owner",
+    function: async (conn, m, { from, reply, isOwner }) => {
+        if (!isOwner) {
+            return reply(`╭┈┈❍ *XERO-MD* ❍
+┊• ❌ Access Denied!
+┊• Only bot owner can use this command
+╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
+
+> POWERED BY nyoni-xmd`);
+        }
+
+        try {
+            await reply(`╭┈┈❍ *XERO-MD* ❍
+┊• 🔄 Force update initiated...
+┊• ⏳ Downloading latest version...
+╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
+
+> POWERED BY nyoni-xmd`);
+
+            // Download latest code as zip
+            const zipPath = path.join(__dirname, "latest.zip");
+            const downloadUrl = `https://github.com/nyoni-xmd/xero-md/archive/main.zip`;
+            const { data: zipData } = await axios.get(downloadUrl, { responseType: "arraybuffer" });
+            fs.writeFileSync(zipPath, zipData);
+
+            await reply(`╭┈┈❍ *XERO-MD* ❍
+┊• 📦 Extracting update...
+╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
+
+> POWERED BY nyoni-xmd`);
+
+            // Extract zip
+            const extractPath = path.join(__dirname, 'xero_update');
+            const zip = new AdmZip(zipPath);
+            zip.extractAllTo(extractPath, true);
+
+            // Copy files
+            const sourcePath = path.join(extractPath, `${REPO_NAME}-main`);
+            const destinationPath = path.join(__dirname, '..');
+            
+            copyFolderSync(sourcePath, destinationPath, ['config.js', 'app.json', 'config.env', 'sessions', '.env']);
+
+            // Save latest commit hash
+            const { data: commitData } = await axios.get(API_URL);
+            saveCommitHash(commitData.sha);
+
+            // Cleanup
+            fs.unlinkSync(zipPath);
+            fs.rmSync(extractPath, { recursive: true, force: true });
+
+            await reply(`╭┈┈❍ *XERO-MD* ❍
+┊• ✅ Force update complete!
+┊• 🔄 Restarting bot...
+╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
+
+> POWERED BY nyoni-xmd`);
+
+            setTimeout(() => {
+                process.exit(0);
+            }, 2000);
+
+        } catch (error) {
+            console.error("Force update error:", error);
+            reply(`╭┈┈❍ *XERO-MD* ❍
+┊• ❌ Force update failed!
+┊• 🔧 Error : ${error.message}
+╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
+
+> POWERED BY nyoni-xmd`);
         }
     }
 });
