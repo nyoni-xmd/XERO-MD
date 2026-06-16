@@ -1,6 +1,6 @@
-// plugins/chatbot.js - XERO-MD AI Chatbot
+// plugins/chatbot.js - XERO-MD Group AI Chatbot WITH 3 APIS
 const config = require("../config");
-const fetch = require("node-fetch");
+const axios = require('axios');
 
 // AI Chatbot status (in-memory toggle)
 let aiEnabled = config.AUTO_AI === "true";
@@ -34,18 +34,45 @@ global.registerCommand({
                     aiReply = "Hujambo! Habari yako? 👋";
                 }
 
-                // If no custom reply, use API
+                // If no custom reply, try APIs
                 if (!aiReply) {
                     await conn.sendPresenceUpdate('composing', from);
-                    const apiUrl = `https://apis.davidcyriltech.my.id/ai/chatbot?query=${encodeURIComponent(body)}&apikey=`;
-                    const response = await fetch(apiUrl);
-                    const data = await response.json();
+                    
+                    // ========== API 1: YUPRA GPT5 ==========
+                    try {
+                        const apiUrl = `https://api.yupra.my.id/api/ai/gpt5?text=${encodeURIComponent(body)}`;
+                        const response = await axios.get(apiUrl, { timeout: 15000 });
+                        if (response.data && (response.data.status === 200 || response.data.success) && response.data.result) {
+                            aiReply = response.data.result || response.data.message || response.data.data;
+                        }
+                    } catch (e) { console.log("Yupra API error:", e.message); }
+                }
 
-                    if (data.status === 200 || data.success) {
-                        aiReply = data.result;
-                    } else {
-                        aiReply = "Samahani, nina tatizo la kiufundi. Jaribu tena baadaye. 🛠️";
-                    }
+                // ========== API 2: DavidCyrilTech ==========
+                if (!aiReply) {
+                    try {
+                        const apiUrl = `https://apis.davidcyriltech.my.id/ai/chatbot?query=${encodeURIComponent(body)}`;
+                        const response = await axios.get(apiUrl, { timeout: 10000 });
+                        if (response.data && (response.data.status === 200 || response.data.success) && response.data.result) {
+                            aiReply = response.data.result || response.data.message;
+                        }
+                    } catch (e) { console.log("DavidCyrilTech error:", e.message); }
+                }
+
+                // ========== API 3: Siputzx ==========
+                if (!aiReply) {
+                    try {
+                        const apiUrl = `https://api.siputzx.my.id/api/ai/gpt4?text=${encodeURIComponent(body)}`;
+                        const response = await axios.get(apiUrl, { timeout: 10000 });
+                        if (response.data && response.data.status && response.data.data) {
+                            aiReply = response.data.data;
+                        }
+                    } catch (e) { console.log("Siputzx error:", e.message); }
+                }
+
+                // If all APIs fail
+                if (!aiReply) {
+                    aiReply = "Samahani, nina tatizo la kiufundi. Jaribu tena baadaye. 🛠️";
                 }
 
                 // Send reply
