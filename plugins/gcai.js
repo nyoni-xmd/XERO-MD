@@ -1,8 +1,8 @@
-// plugins/chatbot.js - XERO-MD Group AI Chatbot WITH 3 APIS
+// plugins/chatbot.js - XERO-MD Group AI Chatbot (YUPRA API ONLY)
 const config = require("../config");
 const axios = require('axios');
 
-// AI Chatbot status (in-memory toggle)
+// AI Chatbot status
 let aiEnabled = config.AUTO_AI === "true";
 
 // ==================== AI CHATBOT EVENT HANDLER ====================
@@ -12,12 +12,11 @@ global.registerCommand({
     on: "body",
     function: async (conn, m, { from, body, isGroup, isCmd, isOwner }) => {
         try {
-            // Check if AI is enabled, in group, not a command, not own message
             if (aiEnabled && isGroup && !isCmd && !m.key?.fromMe && body) {
                 const text = body.toLowerCase();
                 let aiReply = "";
 
-                // --- CUSTOM BRAIN: Quick responses ---
+                // Custom quick responses
                 if (text.includes("wewe ni nani") || text.includes("jina lako") || text.includes("who are you")) {
                     aiReply = "Mimi naitwa *XERO-MD*, bot yako msaidizi hapa groupuni! 🤖";
                 }
@@ -34,48 +33,25 @@ global.registerCommand({
                     aiReply = "Hujambo! Habari yako? 👋";
                 }
 
-                // If no custom reply, try APIs
+                // If no custom reply, use Yupra API
                 if (!aiReply) {
                     await conn.sendPresenceUpdate('composing', from);
                     
-                    // ========== API 1: YUPRA GPT5 ==========
                     try {
                         const apiUrl = `https://api.yupra.my.id/api/ai/gpt5?text=${encodeURIComponent(body)}`;
                         const response = await axios.get(apiUrl, { timeout: 15000 });
+                        
                         if (response.data && (response.data.status === 200 || response.data.success) && response.data.result) {
                             aiReply = response.data.result || response.data.message || response.data.data;
+                        } else {
+                            aiReply = "Samahani, nina tatizo la kiufundi. Jaribu tena baadaye. 🛠️";
                         }
-                    } catch (e) { console.log("Yupra API error:", e.message); }
+                    } catch (e) {
+                        console.error("Yupra API error:", e.message);
+                        aiReply = "Samahani, nina tatizo la kiufundi. Jaribu tena baadaye. 🛠️";
+                    }
                 }
 
-                // ========== API 2: DavidCyrilTech ==========
-                if (!aiReply) {
-                    try {
-                        const apiUrl = `https://apis.davidcyriltech.my.id/ai/chatbot?query=${encodeURIComponent(body)}`;
-                        const response = await axios.get(apiUrl, { timeout: 10000 });
-                        if (response.data && (response.data.status === 200 || response.data.success) && response.data.result) {
-                            aiReply = response.data.result || response.data.message;
-                        }
-                    } catch (e) { console.log("DavidCyrilTech error:", e.message); }
-                }
-
-                // ========== API 3: Siputzx ==========
-                if (!aiReply) {
-                    try {
-                        const apiUrl = `https://api.siputzx.my.id/api/ai/gpt4?text=${encodeURIComponent(body)}`;
-                        const response = await axios.get(apiUrl, { timeout: 10000 });
-                        if (response.data && response.data.status && response.data.data) {
-                            aiReply = response.data.data;
-                        }
-                    } catch (e) { console.log("Siputzx error:", e.message); }
-                }
-
-                // If all APIs fail
-                if (!aiReply) {
-                    aiReply = "Samahani, nina tatizo la kiufundi. Jaribu tena baadaye. 🛠️";
-                }
-
-                // Send reply
                 if (aiReply) {
                     await conn.sendMessage(from, {
                         text: `╭┈┈❍ *XERO-MD AI* ❍
@@ -111,8 +87,8 @@ global.registerCommand({
         try {
             if (!isOwner && !isAdmins) {
                 return reply(`╭┈┈❍ *XERO-MD* ❍
-┊• *❌ Access Denied!*
-┊• *Only owner or group admins can use this*
+┊• ❌ Access Denied!
+┊• Only owner or group admins can use this
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
@@ -125,9 +101,8 @@ global.registerCommand({
                 await conn.sendMessage(from, {
                     image: { url: "https://files.catbox.moe/gyaka2.png" },
                     caption: `╭┈┈❍ *XERO-MD* ❍
-┊• *✅ Group AI Chatbot Activated!*
-┊• *Now I will reply to all messages in this group*
-┊• *Powered by XERO-MD AI*
+┊• ✅ Group AI Chatbot Activated!
+┊• Now I will reply to all messages in this group
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`,
@@ -147,8 +122,8 @@ global.registerCommand({
                 await conn.sendMessage(from, {
                     image: { url: "https://files.catbox.moe/gyaka2.png" },
                     caption: `╭┈┈❍ *XERO-MD* ❍
-┊• *❌ Group AI Chatbot Deactivated!*
-┊• *AI will no longer respond in this group*
+┊• ❌ Group AI Chatbot Deactivated!
+┊• AI will no longer respond in this group
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`,
@@ -165,9 +140,9 @@ global.registerCommand({
             }
             else {
                 await reply(`╭┈┈❍ *XERO-MD* ❍
-┊• 🤖 *Group Chatbot Status* : ${aiEnabled ? "✅ ON" : "❌ OFF"}
+┊• 🤖 Group Chatbot Status : ${aiEnabled ? "ON" : "OFF"}
 ┊•
-┊• *Usage* :
+┊• Usage :
 ┊•   .chb on  - Enable AI in group
 ┊•   .chb off - Disable AI in group
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
@@ -177,7 +152,7 @@ global.registerCommand({
         } catch (error) {
             console.error("❌ Chatbot command error:", error);
             reply(`╭┈┈❍ *XERO-MD* ❍
-┊• *❌ Error: ${error.message}*
+┊• ❌ Error: ${error.message}
 ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈⭘
 
 > POWERED BY nyoni-xmd`);
