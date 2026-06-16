@@ -1,6 +1,6 @@
-// plugins/dmchatbot.js - XERO-MD DM AI Chatbot (Private Chat Only)
+// plugins/dmchatbot.js - XERO-MD DM AI Chatbot (Private Chat Only) WITH 3 APIS
 const config = require("../config");
-const fetch = require("node-fetch");
+const axios = require('axios');
 
 // DM AI Chatbot status
 let dmAiEnabled = true;
@@ -45,35 +45,45 @@ global.registerCommand({
                     aiReply = `⏰ *Sasa ni:* ${time}\n📅 *Tarehe:* ${now.toLocaleDateString()}\n\nTanzania Timezone (UTC+3)`;
                 }
 
-                // If no custom reply, use API
+                // If no custom reply, try APIs
                 if (!aiReply) {
                     await conn.sendPresenceUpdate('composing', from);
                     
-                    // Use the working API (without apikey param as it may not need one)
-                    const apiUrl = `https://apis.davidcyriltech.my.id/ai/chatbot?query=${encodeURIComponent(body)}`;
-                    
+                    // ========== API 1: YUPRA GPT5 ==========
                     try {
-                        const response = await fetch(apiUrl);
-                        const data = await response.json();
-
-                        if (data.status === 200 || data.success || data.result) {
-                            aiReply = data.result || data.message || data.response;
-                        } else {
-                            // Fallback to another API if first one fails
-                            const fallbackUrl = `https://api.siputzx.my.id/api/ai/gpt4?text=${encodeURIComponent(body)}`;
-                            const fallbackRes = await fetch(fallbackUrl);
-                            const fallbackData = await fallbackRes.json();
-                            
-                            if (fallbackData.status && fallbackData.data) {
-                                aiReply = fallbackData.data;
-                            } else {
-                                aiReply = "Samahani, nina tatizo la kiufundi kwa sasa. Jaribu tena baadaye. 🛠️\n\nUnaweza pia kujaribu kuuliza swali tofauti.";
-                            }
+                        const apiUrl = `https://api.yupra.my.id/api/ai/gpt5?text=${encodeURIComponent(body)}`;
+                        const response = await axios.get(apiUrl, { timeout: 15000 });
+                        if (response.data && (response.data.status === 200 || response.data.success) && response.data.result) {
+                            aiReply = response.data.result || response.data.message || response.data.data;
                         }
-                    } catch (apiError) {
-                        console.error("API Error:", apiError);
-                        aiReply = "📡 *Network Error!*\n\nNina shida ya kufikia server za AI. Tafadhali jaribu tena baada ya dakika chache.\n\nBado unaweza kutumia commands zangu: .menu, .ping, .owner";
-                    }
+                    } catch (e) { console.log("Yupra API error:", e.message); }
+                }
+
+                // ========== API 2: DavidCyrilTech ==========
+                if (!aiReply) {
+                    try {
+                        const apiUrl = `https://apis.davidcyriltech.my.id/ai/chatbot?query=${encodeURIComponent(body)}`;
+                        const response = await axios.get(apiUrl, { timeout: 10000 });
+                        if (response.data && (response.data.status === 200 || response.data.success) && response.data.result) {
+                            aiReply = response.data.result || response.data.message;
+                        }
+                    } catch (e) { console.log("DavidCyrilTech error:", e.message); }
+                }
+
+                // ========== API 3: Siputzx ==========
+                if (!aiReply) {
+                    try {
+                        const apiUrl = `https://api.siputzx.my.id/api/ai/gpt4?text=${encodeURIComponent(body)}`;
+                        const response = await axios.get(apiUrl, { timeout: 10000 });
+                        if (response.data && response.data.status && response.data.data) {
+                            aiReply = response.data.data;
+                        }
+                    } catch (e) { console.log("Siputzx error:", e.message); }
+                }
+
+                // If all APIs fail
+                if (!aiReply) {
+                    aiReply = "Samahani, nina tatizo la kiufundi kwa sasa. Jaribu tena baadaye. 🛠️\n\nUnaweza pia kujaribu kuuliza swali tofauti.";
                 }
 
                 // Send reply with stylish format
