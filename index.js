@@ -82,7 +82,7 @@ async function getAIResponse(message) {
 // ========== SESSION ==========
 if (!fs.existsSync('./sessions')) fs.mkdirSync('./sessions');
 if (!fs.existsSync('./sessions/creds.json') && config.SESSION_ID) {
-    let key = config.SESSION_ID.replace(/^(POPKID;;;|XERO-MD>>>|jamali~|QUEEN-LORA~)/, '').trim();
+    let key = config.SESSION_ID.replace(/^(NEXUS___|XERO-MD>>>|jamali~|QUEEN-LORA~)/, '').trim();
     console.log("📥 Downloading session...");
     File.fromURL(`https://mega.nz/file/${key}`).download((err, data) => {
         if (!err) { fs.writeFileSync('./sessions/creds.json', data); console.log("✅ Session ready!"); }
