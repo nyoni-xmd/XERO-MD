@@ -1,0 +1,14 @@
+[
+  {
+    "sender": "255712345678@s.whatsapp.net",
+    "recipient": "255763111390@s.whatsapp.net",
+    "message": "Hello, how are you?",
+    "timestamp": 1747923456789
+  },
+  {
+    "sender": "255763111390@s.whatsapp.net",
+    "recipient": "255712345678@s.whatsapp.net",
+    "message": "I'm good, thanks!",
+    "timestamp": 1747923456790
+  }
+]
