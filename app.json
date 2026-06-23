@@ -5,7 +5,7 @@
   "keywords": ["xero-md", "whatsapp-bot"],
   "env": {
     "SESSION_ID": {
-      "description": "Your session ID (NEXUS___...)",
+      "description": "Your session ID (SILA-MD~...)",
       "required": true,
       "value": ""
     },
